@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import java.awt.Color;
 
 import javax.swing.JTextField;
+import javax.swing.border.MatteBorder;
 
 import connection.UserConnection;
 import etc.ResponseCode;
@@ -23,13 +24,10 @@ import javax.swing.JPasswordField;
 
 public class LoginFrame extends JFrame{
 
-/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	//------------------------------------------------------------
+//------------------------------------------------------------
 	private JoinFrame joinFrame; //회원가입창
-	private MainFrame mainFrame; //
+	private MainFrame mainFrame; 
 	
 	private JPanel imagePanel;
 		private JPanel one;
@@ -44,6 +42,8 @@ public class LoginFrame extends JFrame{
 		private JButton joinBtn;
 
 	private Font font = new Font("맑은 고딕",Font.BOLD,18);
+	
+	private Color color1 = new Color(30,204,208);	//청록
 
 	private UserConnection userConnection;
 	
@@ -63,16 +63,11 @@ public class LoginFrame extends JFrame{
 			}
 		});
 	}
-	/**
-	 * Create the application.
-	 */
+	
 	public LoginFrame() {
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
 	private void initialize() {
 		userConnection = new UserConnection();
 		
@@ -143,14 +138,14 @@ public class LoginFrame extends JFrame{
 			joinBtn.setFont(font);
 			joinBtn.setSize(140, 50);
 			joinBtn.setLocation(55, 200);
-			joinBtn.setBackground(Color.pink);
+			joinBtn.setBackground(color1);
+			joinBtn.setBorder(new MatteBorder(1,1,1,1, Color.black));
 			
 			joinBtn.addActionListener(new ActionListener() {
 				@Override
 	 			public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
 	 				joinFrame = new JoinFrame();	//회원가입버튼 클릭시 회원가입 창 띄우기
-	 				//frame.setVisible(true);
 	 			}
 	 		});
 		two.add(joinBtn);
@@ -160,7 +155,8 @@ public class LoginFrame extends JFrame{
 			loginBtn.setFont(font);
 			loginBtn.setSize(140, 50);
 			loginBtn.setLocation(210, 200);
-			loginBtn.setBackground(Color.pink);
+			loginBtn.setBackground(color1);
+			loginBtn.setBorder(new MatteBorder(1,1,1,1, Color.black));
 			
 			loginBtn.addActionListener(new ActionListener() {
 				@Override

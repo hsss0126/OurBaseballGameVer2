@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.ListUI;
 
@@ -37,9 +38,6 @@ import listrenderer.RoomListRenderer;
 
 public class WaitingPanel extends JPanel{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private MakeRoomFrame makeRoom;
 	private MainFrame mainFrame;
@@ -53,10 +51,15 @@ public class WaitingPanel extends JPanel{
 				private JLabel recordLabel;
 				private JLabel recordText;
 			private JPanel roomInfoPanel;
-				static JList<RoomListPanel> roomList;
-				static DefaultListModel<RoomListPanel> roomListModel = new DefaultListModel<>();	//DefaultListModel 클래스는  JList에 채울 데이터를 담을 객체
-				static JPanel roomListPanel;
-				private JButton makeRoomBtn;
+				private JPanel roomTitlePanel;
+					private JButton roomNoLabel;
+					private JButton roomNameLabel;
+					private JButton levelLabel;
+					private JButton userCountLabel;
+				private JPanel roomListPanel;
+					private JList<RoomListPanel> roomList;
+					private DefaultListModel<RoomListPanel> roomListModel = new DefaultListModel<>();	//DefaultListModel 클래스는  JList에 채울 데이터를 담을 객체
+					private JButton makeRoomBtn;
 			
 		//대화창&대기실접속자정보
 		private JPanel two;					
@@ -78,6 +81,13 @@ public class WaitingPanel extends JPanel{
 		private Font font3 = new Font("맑은 고딕",Font.BOLD,12);
 		private Font font4 = new Font("맑은 고딕", Font.PLAIN, 15);
 
+		private Color color1 = new Color(202,236,244);	//연하늘
+		private Color color2 = new Color(30,204,208);	//청록
+		private Color color3 = new Color(255,201,221);	//연핑
+		private Color color4 = new Color(216,167,216);	//연보라
+		private Color color5 = new Color(217,211,210);	//연그레이
+		private Color color6 = new Color(92,84,82);		//조금 더 진한 연그레이
+
 		static BevelBorder border;
 		private JSONParser parser;
 		
@@ -91,7 +101,6 @@ public class WaitingPanel extends JPanel{
 		private String record;
 		private String onlineUser;
 //------------------------------------------------------------------------------------------------------------
-		
 		
 	public WaitingPanel(MainFrame mf, User myInfo){
 		mainFrame = mf;
@@ -143,6 +152,7 @@ public class WaitingPanel extends JPanel{
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+		
 		border = new BevelBorder(BevelBorder.RAISED);//3차원적인 테두리 효과를 위한것이고 양각의 옵션을 줌
 		
 		setLayout(new GridLayout(2,1));
@@ -180,14 +190,15 @@ public class WaitingPanel extends JPanel{
 	void details_1() {
 		//내정보
 		myInfoPanel = new JPanel();
-			myInfoPanel.setBackground(Color.pink);
+			myInfoPanel.setBackground(color1);
 			myInfoPanel.setLayout(null);
 			myInfoPanel.setSize(250, 270);
 			myInfoPanel.setLocation(5, 5);
-			myInfoPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK, 5),"")); //테두리설정
+			myInfoPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),"")); //테두리설정
 		
 			myInfoLabel = new JLabel("        내  정  보");
 				myInfoLabel.setBackground(Color.white);
+				myInfoLabel.setOpaque(true);
 				myInfoLabel.setFont(font);
 				myInfoLabel.setSize(200, 40);
 				myInfoLabel.setLocation(25, 30);
@@ -227,18 +238,98 @@ public class WaitingPanel extends JPanel{
 		
 		//방정보
 		roomInfoPanel = new JPanel();
-			roomInfoPanel.setBackground(Color.white);
+			roomInfoPanel.setBackground(color1);
 			roomInfoPanel.setLayout(null);
 			roomInfoPanel.setSize(530, 270);
 			roomInfoPanel.setLocation(260, 5);
-			roomInfoPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK, 5),""));
+			roomInfoPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),""));
 		
-			roomListPanel = new JPanel();	//방리스트
-				roomListPanel.setBackground(Color.pink);
+			//타이틀 패널
+			roomTitlePanel = new JPanel();
+				roomTitlePanel.setBackground(color5);
+				roomTitlePanel.setLayout(null);
+				roomTitlePanel.setSize(500, 30);
+				roomTitlePanel.setLocation(15, 60);
+				roomTitlePanel.setBorder(new MatteBorder(3,3,3,3, color6));
+				
+				roomNoLabel = new JButton("No");
+					roomNoLabel.setBackground(color5);
+					roomNoLabel.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 17));
+					roomNoLabel.setSize(50, 30);
+					roomNoLabel.setLocation(0, 0);
+					roomNoLabel.setBorder(new MatteBorder(3,3,3,3, color6));
+					roomNoLabel.setHorizontalAlignment(JLabel.CENTER);
+					
+					roomNoLabel.addActionListener(new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
+				roomTitlePanel.add(roomNoLabel);
+				
+				roomNameLabel = new JButton("방 이 름");
+					roomNameLabel.setBackground(color5);
+					roomNameLabel.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 18));
+					roomNameLabel.setSize(290, 30);
+					roomNameLabel.setLocation(50, 0);
+					roomNameLabel.setBorder(new MatteBorder(3,0,3,3, color6));
+					roomNameLabel.setHorizontalAlignment(JLabel.CENTER);
+					
+					roomNameLabel.addActionListener(new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
+				roomTitlePanel.add(roomNameLabel);
+				
+				levelLabel = new JButton("난이도");
+					levelLabel.setBackground(color5);
+					levelLabel.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 17));
+					levelLabel.setSize(90, 30);
+					levelLabel.setLocation(340, 0);
+					levelLabel.setBorder(new MatteBorder(3,0,3,3, color6));
+					levelLabel.setHorizontalAlignment(JLabel.CENTER);
+					
+					levelLabel.addActionListener(new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
+				roomTitlePanel.add(levelLabel);
+			
+				userCountLabel = new JButton("인원수");
+					userCountLabel.setBackground(color5);
+					userCountLabel.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 17));
+					userCountLabel.setSize(80, 30);
+					userCountLabel.setLocation(420, 0);
+					userCountLabel.setBorder(new MatteBorder(3,3,3,3, color6));
+					userCountLabel.setHorizontalAlignment(JLabel.CENTER);
+					
+					userCountLabel.addActionListener(new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							// TODO Auto-generated method stub
+							
+						}
+					});
+				roomTitlePanel.add(userCountLabel);
+			roomInfoPanel.add(roomTitlePanel);
+			
+			//방 리스트 패널
+			roomListPanel = new JPanel();	
+				roomListPanel.setBackground(color3);
 				roomListPanel.setLayout(new BorderLayout());
-				roomListPanel.setSize(500, 200);
-				roomListPanel.setLocation(15, 60);
-				roomListPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK, 3),""));		
+				roomListPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),""));		
 		roomInfoPanel.add(roomListPanel);
 		
 		for(RoomInfo roomInfo : createdRoomList) {
@@ -247,7 +338,7 @@ public class WaitingPanel extends JPanel{
 		}
 		roomList = new JList<RoomListPanel>(roomListModel);
 			roomList.setCellRenderer(new RoomListRenderer());
-			roomList.setBackground(Color.pink);
+			roomList.setBackground(Color.white);
 			roomList.setFont(font4);
 			roomList.setFixedCellHeight(30);
 			
@@ -255,10 +346,11 @@ public class WaitingPanel extends JPanel{
 		roomInfoPanel.add(roomListPanel);
 				
 		makeRoomBtn = new JButton("방 만 들 기");
-			makeRoomBtn.setBackground(Color.pink);
+			makeRoomBtn.setBackground(color2);
 			makeRoomBtn.setFont(font);
 			makeRoomBtn.setSize(150, 40);
 			makeRoomBtn.setLocation(360, 15);
+			makeRoomBtn.setBorder(new MatteBorder(3,3,3,3, color6));
 				
 			makeRoomBtn.addActionListener(new ActionListener() {
 				@Override
@@ -283,7 +375,7 @@ public class WaitingPanel extends JPanel{
 			waitingInfoPanel.setLayout(null);
 			waitingInfoPanel.setSize(250, 270);
 			waitingInfoPanel.setLocation(5, 5);
-			waitingInfoPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK, 5),"")); //테두리설정
+			waitingInfoPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),"")); //테두리설정
 			
 			waitingLabel1 = new JLabel("대 기 실");
 				waitingLabel1.setBackground(Color.white);
@@ -292,19 +384,17 @@ public class WaitingPanel extends JPanel{
 				waitingLabel1.setLocation(13, 15);
 			waitingInfoPanel.add(waitingLabel1);
 			
-			waitingLabel1 = new JLabel("( 접속중 )");
-				waitingLabel1.setBackground(Color.white);
-				waitingLabel1.setFont(font2);
-				waitingLabel1.setSize(100, 30);
-				waitingLabel1.setLocation(90, 15);
-			waitingInfoPanel.add(waitingLabel1);
+			waitingLabel2 = new JLabel("( 접속중 )");
+				waitingLabel2.setBackground(Color.white);
+				waitingLabel2.setFont(font2);
+				waitingLabel2.setSize(100, 30);
+				waitingLabel2.setLocation(90, 15);
+			waitingInfoPanel.add(waitingLabel2);
 			
 			waitingListPanel = new JPanel();
-				waitingListPanel.setBackground(Color.pink);
+				waitingListPanel.setBackground(color1);
 				waitingListPanel.setLayout(new BorderLayout());
-				waitingListPanel.setSize(230, 210);
-				waitingListPanel.setLocation(10, 50);
-				waitingListPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK, 3),"")); //테두리설정
+				waitingListPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),"")); //테두리설정
 				
 				OnlineUserPanel panel = new OnlineUserPanel(myInfo.getNickName(), myInfo.getStateName());
 				waitingListModel.addElement(panel);
@@ -316,7 +406,7 @@ public class WaitingPanel extends JPanel{
 				}
 				waitingList = new JList<OnlineUserPanel>(waitingListModel);
 					waitingList.setCellRenderer(new OnlineUserRenderer());
-					waitingList.setBackground(Color.pink);
+					waitingList.setBackground(color1);
 					waitingList.setFont(font4);
 					waitingList.setFixedCellHeight(30);
 					
@@ -326,17 +416,15 @@ public class WaitingPanel extends JPanel{
 	
 		//대화창
 		talkingPanel = new JPanel();
-			talkingPanel.setBackground(Color.white);
+			talkingPanel.setBackground(color1);
 			talkingPanel.setLayout(null);
 			talkingPanel.setSize(530, 270);
 			talkingPanel.setLocation(260, 5);
-			talkingPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK, 5),"")); //테두리설정
+			talkingPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),"")); //테두리설정
 			
 			talkListPanel = new JPanel();
-				talkListPanel.setBackground(Color.pink);
+				talkListPanel.setBackground(color1);
 				talkListPanel.setLayout(new BorderLayout());
-				talkListPanel.setSize(520, 221);
-				talkListPanel.setLocation(5, 5);
 			talkingPanel.add(talkListPanel);
 			
 			talkInput = new JTextField("");
@@ -346,11 +434,12 @@ public class WaitingPanel extends JPanel{
 			talkingPanel.add(talkInput);
 			
 			talkBtn = new JButton("전송");
-				talkBtn.setBackground(Color.black);
+				talkBtn.setBackground(color2);
 				talkBtn.setFont(font3);
-				talkBtn.setForeground(Color.white);
+				talkBtn.setForeground(Color.black);
 				talkBtn.setSize(60, 40);
 				talkBtn.setLocation(465, 225);
+				talkBtn.setBorder(new MatteBorder(3,3,3,3, color6));
 				
 				talkBtn.addActionListener(new ActionListener() {
 					@Override
@@ -365,7 +454,7 @@ public class WaitingPanel extends JPanel{
 			
 			talkList = new JList<String>(talkListModel);	//JList 객체를 생성할 때, 생성자 파라미터로 DefaultListModel 객체를 전달해 주어야 함.
 															//이 DefaultListModel 객체에 담겨진 데이터가, 자동으로 JList 객체에 보여짐.
-			talkList.setBackground(Color.pink);
+			talkList.setBackground(color1);
 			talkList.setFont(font4);
 			talkListPanel.add(new JScrollPane(talkList),"Center");	//대화창패널에 리스트붙이기
 		two.add(talkingPanel);

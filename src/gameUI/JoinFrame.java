@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Color;
 import javax.swing.JTextField;
-
+import javax.swing.border.MatteBorder;
 
 import connection.UserConnection;
 import etc.ResponseCode;
@@ -20,10 +20,6 @@ import java.awt.event.ActionEvent;
 public class JoinFrame extends JFrame{
 
 //---------------------------------------------------------------
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private JPanel joinPanel;
@@ -40,6 +36,8 @@ public class JoinFrame extends JFrame{
 	
 	private Font font1 = new Font("맑은 고딕",Font.BOLD,20);
 	private Font font2 = new Font("맑은 고딕",Font.BOLD,30);
+	
+	private Color color1 = new Color(30,204,208);	//청록
 	
 	private UserConnection userConnection;
 	
@@ -135,7 +133,8 @@ public class JoinFrame extends JFrame{
 			joinBtn.setFont(font1);
 			joinBtn.setSize(140, 50);
 			joinBtn.setLocation(55, 480);
-			joinBtn.setBackground(Color.pink);
+			joinBtn.setBackground(color1);
+			joinBtn.setBorder(new MatteBorder(1,1,1,1, Color.black));
 			
 			joinBtn.addActionListener(new ActionListener() {
 	 			public void actionPerformed(ActionEvent e) {
@@ -184,7 +183,8 @@ public class JoinFrame extends JFrame{
 			cancelBtn.setFont(font1);
 			cancelBtn.setSize(140, 50);
 			cancelBtn.setLocation(210, 480);
-			cancelBtn.setBackground(Color.pink);
+			cancelBtn.setBackground(color1);
+			cancelBtn.setBorder(new MatteBorder(1,1,1,1, Color.black));
 			
 			cancelBtn.addActionListener(new ActionListener() {
 				@Override

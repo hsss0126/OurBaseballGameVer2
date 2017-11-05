@@ -13,19 +13,15 @@ import connection.UserConnection;
 import dto.RoomInfo;
 import dto.User;
 
+
 public class MainFrame extends JFrame{
 
-/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	//----------------------------------------------------
+//----------------------------------------------------
 	private UserConnection userConnection;
-	private JFrame frame;
-	static MakeRoomFrame makeRoom;
+	private MakeRoomFrame makeRoom;
 	
 	private CardLayout cards = new CardLayout();
-	
 //----------------------------------------------------
 
 	private JSONParser parser;
@@ -34,10 +30,6 @@ public class MainFrame extends JFrame{
 	private User myInfo;
 	private RoomInfo myRoomInfo;
 	
-
-	/**
-	 * Create the application.
-	 */
 	public MainFrame(String nickName) {
 		this.myNickName = nickName;
 		myInfo = new User();
@@ -55,11 +47,8 @@ public class MainFrame extends JFrame{
 		setLocation(1100,100);
 		setResizable(false);	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		userConnection = new UserConnection();
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		userConnection = new UserConnection();
 		
 		result = userConnection.infoConnection(myNickName);
 		System.out.println(result);
@@ -78,6 +67,8 @@ public class MainFrame extends JFrame{
 		}
 		getContentPane().add("WaitingPanel", new WaitingPanel(this, myInfo));
 		getContentPane().add("RoomPanel", new RoomPanel(this));
+		getContentPane().add("GamePanel", new GamePanel(this));			//게임 화면 GamePanel패널 부착
+
 	}
 	
 	public void  changePanel() {

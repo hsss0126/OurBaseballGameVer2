@@ -30,15 +30,11 @@ import dto.User;
 
 public class MakeRoomFrame extends JFrame{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private User myInfo;
 	private CardLayout cards = new CardLayout();
 	
-	private RoomPanel room;
 	private MainFrame mainFrame;
 	
 	private JPanel roomPanel;
@@ -58,6 +54,12 @@ public class MakeRoomFrame extends JFrame{
 	private Font font1 = new Font("맑은 고딕",Font.BOLD,15);
 	private Font font2 = new Font("맑은 고딕",Font.BOLD,20);
 	
+	private Color color1 = new Color(202,236,244);	//연하늘
+	private Color color2 = new Color(30,204,208);	//청록
+	private Color color3 = new Color(255,201,221);	//연핑
+	private Color color4 = new Color(216,167,216);	//연보라
+	private Color color5 = new Color(217,211,210);	//연그레이
+	
 	public MakeRoomFrame(MainFrame mf, User myInfo) {
 		this.myInfo = myInfo;
 		mainFrame = mf;
@@ -69,8 +71,8 @@ public class MakeRoomFrame extends JFrame{
 		
 		setLayout(null);
 		setBackground(Color.WHITE);
-		setSize(350,300);
-		//setUndecorated(true); //프레임 타이틀바 없애기
+		setSize(345,265);
+		setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
 		setLocation(1300,250);
 		setResizable(false);	
@@ -175,16 +177,8 @@ public class MakeRoomFrame extends JFrame{
 					//RoomPanel 불러오기
 					mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
 					dispose(); 
-					
-				//----------------------------------------------------------------------
-					
-					//MainFrame.roomListModel.addElement("< 방 이름 : " + roomName + " > 난이도 : "+ level + "   (인원 : 1/2)");	//메인프레임 리스트뷰에 추가	
 				}
 			});
-			//MainFrame.roomList = new JList<String>(MainFrame.roomListModel);
-			//MainFrame.roomList.setBackground(Color.pink);
-			//MainFrame.roomList.setFont(font1);
-			//MainFrame.roomListPanel.add(new JScrollPane(MainFrame.roomList),"Center");
 		roomPanel.add(okBtn);
 		
 		closeBtn = new JButton("취 소");
