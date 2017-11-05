@@ -20,13 +20,22 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import connection.RoomInfoConnection;
+import dto.RoomInfo;
+import dto.User;
+
 public class MakeRoomFrame extends JFrame{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	private User myInfo;
 	private CardLayout cards = new CardLayout();
 	
 	private RoomPanel room;
@@ -40,19 +49,24 @@ public class MakeRoomFrame extends JFrame{
 		private JRadioButton level1, level2, level3;
 		static JButton okBtn, closeBtn;
 		
-	static String roomName = "";
-	static String level = "";
-	static int flag = 0;
+	private JSONParser parser;
+	private RoomInfoConnection roomInfoConnection;
+	private String roomName;
+	private int level;
+	private String result;
 		
 	private Font font1 = new Font("맑은 고딕",Font.BOLD,15);
 	private Font font2 = new Font("맑은 고딕",Font.BOLD,20);
 	
-	public MakeRoomFrame(MainFrame mf) {
+	public MakeRoomFrame(MainFrame mf, User myInfo) {
+		this.myInfo = myInfo;
 		mainFrame = mf;
 		initialize();
 	}
 	
 	private void initialize() {
+		roomInfoConnection = new RoomInfoConnection();
+		
 		setLayout(null);
 		setBackground(Color.WHITE);
 		setSize(350,300);
@@ -133,21 +147,38 @@ public class MakeRoomFrame extends JFrame{
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
 					
+					roomName = roomNameText.getText();		//입력된 방 이름
+					if(level1.isSelected()) {
+						level = 3;
+					}else if(level2.isSelected()) {
+						level = 4;
+					}else {
+						level = 5;
+					}
+					result = roomInfoConnection.createConnection(roomName, Integer.toString(level), Integer.toString(myInfo.getId()));
+					System.out.println(result);
+					try {
+						parser = new JSONParser();
+						JSONObject json = (JSONObject) parser.parse(result);
+						RoomInfo roomInfo = new RoomInfo();
+						roomInfo.setId(Integer.parseInt((String)json.get("id")));
+						roomInfo.setRoomName((String)json.get("roomName"));
+						roomInfo.setHostId(Integer.parseInt((String)json.get("hostId")));
+						roomInfo.setHostName((String)json.get("hostName"));
+						roomInfo.setLevel(Integer.parseInt((String)json.get("level")));
+						roomInfo.setUserCount(Integer.parseInt((String)json.get("userCount")));
+						mainFrame.setMyRoomInfo(roomInfo);
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					//RoomPanel 불러오기
 					mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
 					dispose(); 
 					
 				//----------------------------------------------------------------------
-					roomName = roomNameText.getText();		//입력된 방 이름
-					level = "";								//선택된 난이도
-						if(level1.isSelected()) {
-							level = "3자리 수";
-						}else if(level2.isSelected()) {
-							level = "4자리 수";
-						}else {
-							level = "5자리 수";
-						}
-						//MainFrame.roomListModel.addElement("< 방 이름 : " + roomName + " > 난이도 : "+ level + "   (인원 : 1/2)");	//메인프레임 리스트뷰에 추가	
+					
+					//MainFrame.roomListModel.addElement("< 방 이름 : " + roomName + " > 난이도 : "+ level + "   (인원 : 1/2)");	//메인프레임 리스트뷰에 추가	
 				}
 			});
 			//MainFrame.roomList = new JList<String>(MainFrame.roomListModel);

@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import connection.UserConnection;
+import dto.RoomInfo;
 import dto.User;
 
 public class MainFrame extends JFrame{
@@ -30,7 +31,8 @@ public class MainFrame extends JFrame{
 	private JSONParser parser;
 	private String myNickName;
 	private String result;
-	private User user;
+	private User myInfo;
+	private RoomInfo myRoomInfo;
 	
 
 	/**
@@ -38,7 +40,7 @@ public class MainFrame extends JFrame{
 	 */
 	public MainFrame(String nickName) {
 		this.myNickName = nickName;
-		user = new User();
+		myInfo = new User();
 		initialize();
 	}
 	
@@ -57,8 +59,7 @@ public class MainFrame extends JFrame{
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().add("WaitingPanel", new WaitingPanel(this));
-		getContentPane().add("RoomPanel", new RoomPanel());
+		
 		
 		result = userConnection.infoConnection(myNickName);
 		System.out.println(result);
@@ -66,16 +67,17 @@ public class MainFrame extends JFrame{
 		try {
 			parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(result);
-			user.setId(Integer.parseInt((String)json.get("id")));
-			user.setNickName((String) json.get("nickName"));
-			user.setWin(Integer.parseInt((String)json.get("win")));
-			user.setLose(Integer.parseInt((String)json.get("lose")));
-			user.setStateName((String) json.get("stateName"));
-			System.out.println(user.toString());
+			myInfo.setId(Integer.parseInt((String)json.get("id")));
+			myInfo.setNickName((String) json.get("nickName"));
+			myInfo.setWin(Integer.parseInt((String)json.get("win")));
+			myInfo.setLose(Integer.parseInt((String)json.get("lose")));
+			myInfo.setStateName((String) json.get("stateName"));
+			System.out.println(myInfo.toString());
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+		getContentPane().add("WaitingPanel", new WaitingPanel(this, myInfo));
+		getContentPane().add("RoomPanel", new RoomPanel(this));
 	}
 	
 	public void  changePanel() {
@@ -86,5 +88,11 @@ public class MainFrame extends JFrame{
 		return cards;
 	}
 
+	public RoomInfo getMyRoomInfo() {
+		return myRoomInfo;
+	}
 
+	public void setMyRoomInfo(RoomInfo myRoomInfo) {
+		this.myRoomInfo = myRoomInfo;
+	}
 }

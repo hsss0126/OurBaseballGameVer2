@@ -48,7 +48,7 @@ public class User {
 		this.stateName = stateName;
 	}
 
-	public double getRate() {
+	public float getRate() {
 		if(this.win==0&&this.lose==0) return 0;
 		return this.win / (this.win + this.lose) * 100;
 	}

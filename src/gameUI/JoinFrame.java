@@ -149,20 +149,20 @@ public class JoinFrame extends JFrame{
 					if(password.equalsIgnoreCase(repassword)) {
 						System.out.println("패스워드 동일");
 						//닉네임 중복확인
-						checkResult = userConnection.loginConnection(nickName,password);
+						checkResult = userConnection.loginConnection(nickName,password.toLowerCase());
 						
 						switch(Integer.parseInt(checkResult)) {
 						case ResponseCode.connect_error:
 							System.out.println("서버 연결 오류");
 							break;
-						case ResponseCode.id_error:
+						case ResponseCode.user_id_error:
 							System.out.println("가입 가능");
-							joinResult = userConnection.joinConnection(nickName,password);
+							joinResult = userConnection.joinConnection(nickName,password.toLowerCase());
 							switch(Integer.parseInt(joinResult)) {
 							case ResponseCode.connect_error:
 								System.out.println("서버 연결 오류");
 								break;
-							case ResponseCode.join_success:
+							case ResponseCode.user_create_success:
 								System.out.println("가입 성공");
 								dispose(); //해당 프레임만 종료
 								break;

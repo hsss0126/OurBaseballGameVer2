@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import org.json.simple.JSONObject;
 
@@ -75,7 +76,8 @@ public class RoomInfoConnection {
 		HttpURLConnection conn = null;
 		String result;
 		try {
-			url = new URL(URLs.url+"roomInfo/list");
+			String orderIndex = URLEncoder.encode(arg[0], "UTF-8");
+			url = new URL(URLs.url+"roomInfo/list?orderBy="+orderIndex);
 			conn = (HttpURLConnection) url.openConnection();
 			
 			conn.setReadTimeout(10000);

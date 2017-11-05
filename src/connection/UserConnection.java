@@ -155,6 +155,44 @@ public class UserConnection {
 	}
 	
 	/**
+	 * 접속중인 회원 목록 받아오기
+	 * @param x
+	 * @return 조회된 접속중인 회원정보
+	 */
+	public String listConnection(String ...arg) {
+		URL url;
+		HttpURLConnection conn = null;
+		String result;
+		try {
+			url = new URL(URLs.url+"user/list");
+			conn = (HttpURLConnection) url.openConnection();
+			
+			conn.setReadTimeout(10000);
+			conn.setConnectTimeout(10000);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Cache-Control", "no-cache");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setDoInput(true);
+			conn.setDoOutput(false);
+			System.out.println("연결 세팅");
+			
+			System.out.println(conn.getResponseCode());
+			if(conn.getResponseCode() == 200) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				while((result = br.readLine())!=null) {
+					return result;
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		result = Integer.toString(ResponseCode.connect_error);
+		return result; 	
+	}
+	
+	/**
 	 * 회원정보 업데이트 메소드
 	 * @param User
 	 * @return 결과값
@@ -165,7 +203,7 @@ public class UserConnection {
 		HttpURLConnection conn = null;
 		String result;
 		try {
-			url = new URL(URLs.url+"user/create");
+			url = new URL(URLs.url+"user/update");
 			conn = (HttpURLConnection) url.openConnection();
 			
 			conn.setReadTimeout(10000);
@@ -179,8 +217,10 @@ public class UserConnection {
 			System.out.println("연결 세팅");
 			
 			JSONObject json = new JSONObject();
-			json.put("nickName", arg[0]);
-			json.put("password", arg[1]);
+			json.put("id", arg[0]);
+			json.put("win", arg[1]);
+			json.put("lose", arg[2]);
+			json.put("stateId", arg[3]);
 			System.out.println(json.toString());
 			
 			OutputStream out = conn.getOutputStream();

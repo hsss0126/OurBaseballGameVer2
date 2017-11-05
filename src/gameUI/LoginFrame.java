@@ -170,22 +170,21 @@ public class LoginFrame extends JFrame{
 					password = new String(passwordField.getPassword());
 					String result;
 					
-					result = userConnection.loginConnection(nickName, password);
+					result = userConnection.loginConnection(nickName, password.toLowerCase());
 					
 					switch(Integer.parseInt(result)) {
 					case ResponseCode.connect_error:
 						System.out.println("서버 연결 오류");
 						break;
-					case ResponseCode.login_success:
+					case ResponseCode.user_login_success:
 						System.out.println("로그인 성공");
 						mainFrame = new MainFrame(nickName);
 						dispose();
-						
 						break;
-					case ResponseCode.id_error:
+					case ResponseCode.user_id_error:
 						System.out.println("해당 닉네임 중복");
 						break;
-					case ResponseCode.pwd_error:
+					case ResponseCode.user_pwd_error:
 						System.out.println("패스워드 오류");
 						break;
 					}
