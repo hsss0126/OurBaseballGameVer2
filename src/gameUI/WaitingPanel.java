@@ -329,6 +329,8 @@ public class WaitingPanel extends JPanel{
 			roomListPanel = new JPanel();	
 				roomListPanel.setBackground(color3);
 				roomListPanel.setLayout(new BorderLayout());
+				roomListPanel.setSize(500, 175);
+				roomListPanel.setLocation(15, 85);
 				roomListPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),""));		
 		roomInfoPanel.add(roomListPanel);
 		
@@ -394,6 +396,8 @@ public class WaitingPanel extends JPanel{
 			waitingListPanel = new JPanel();
 				waitingListPanel.setBackground(color1);
 				waitingListPanel.setLayout(new BorderLayout());
+				waitingListPanel.setSize(225, 210);
+				waitingListPanel.setLocation(13, 50);
 				waitingListPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),"")); //테두리설정
 				
 				OnlineUserPanel panel = new OnlineUserPanel(myInfo.getNickName(), myInfo.getStateName());
@@ -425,6 +429,8 @@ public class WaitingPanel extends JPanel{
 			talkListPanel = new JPanel();
 				talkListPanel.setBackground(color1);
 				talkListPanel.setLayout(new BorderLayout());
+				talkListPanel.setSize(523, 222);
+				talkListPanel.setLocation(3, 3);
 			talkingPanel.add(talkListPanel);
 			
 			talkInput = new JTextField("");

@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
 import javax.swing.text.AttributeSet;
@@ -138,10 +139,11 @@ public class MakeRoomFrame extends JFrame{
 		roomPanel.add(levelPanel);
 		
 		okBtn = new JButton("완 료");
-			okBtn.setBackground(Color.pink);
+			okBtn.setBackground(color2);
 			okBtn.setFont(font2);
 			okBtn.setSize(130, 40);
 			okBtn.setLocation(40, 210);
+			okBtn.setBorder(new MatteBorder(3,3,3,3, Color.black));
 			
 			okBtn.addActionListener(new ActionListener() {
 				
@@ -182,10 +184,11 @@ public class MakeRoomFrame extends JFrame{
 		roomPanel.add(okBtn);
 		
 		closeBtn = new JButton("취 소");
-			closeBtn.setBackground(Color.pink);
+			closeBtn.setBackground(color2);
 			closeBtn.setFont(font2);
 			closeBtn.setSize(130, 40);
 			closeBtn.setLocation(180, 210);
+			closeBtn.setBorder(new MatteBorder(3,3,3,3, Color.black));
 			
 			closeBtn.addActionListener(new ActionListener() {
 					@Override
