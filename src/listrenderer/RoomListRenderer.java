@@ -6,15 +6,15 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import gameUI.OnlineUserPanel;
+import gameUI.RoomListPanel;
 
-public class OnlineUserRenderer implements ListCellRenderer<OnlineUserPanel>{
+public class RoomListRenderer implements ListCellRenderer<RoomListPanel>{
 
 	private JPanel panel;
 	@Override
-	public Component getListCellRendererComponent(JList <? extends OnlineUserPanel> list, OnlineUserPanel onlinePanel, int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getListCellRendererComponent(JList<? extends RoomListPanel> list, RoomListPanel roomListPanel, int index, boolean isSelected, boolean cellHasFocus) {
 		// TODO Auto-generated method stub
-		panel = onlinePanel.getPanel();
+		panel = roomListPanel.getPanel();
 		panel.setOpaque(true);
 		
 		if (isSelected) {
