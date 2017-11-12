@@ -1,6 +1,5 @@
 package gameUI;
 
-import java.awt.FlowLayout;
 import java.awt.Font;
 
 import javax.swing.JLabel;
@@ -15,26 +14,34 @@ public class RoomListPanel {
 	
 	public RoomListPanel(int roomId, String roomName, int level, int userCount) {
 		panel = new JPanel();
-		panel.setLayout(new FlowLayout());
+		panel.setLayout(null);
 		
 		roomIdLabel = new JLabel(Integer.toString(roomId));
 		roomIdLabel.setHorizontalAlignment(JLabel.CENTER);
 		roomIdLabel.setFont(font4);
+		roomIdLabel.setSize(50, 30);
+		roomIdLabel.setLocation(0, 0);
 		panel.add(roomIdLabel);
 		
 		roomNameLabel = new JLabel(roomName);
 		roomNameLabel.setHorizontalAlignment(JLabel.CENTER);
 		roomNameLabel.setFont(font4);
+		roomNameLabel.setSize(290, 30);
+		roomNameLabel.setLocation(50, 0);
 		panel.add(roomNameLabel);
 		
 		levelLabel = new JLabel(Integer.toString(level));
 		levelLabel.setHorizontalAlignment(JLabel.CENTER);
 		levelLabel.setFont(font4);
+		levelLabel.setSize(90, 30);
+		levelLabel.setLocation(340, 0);
 		panel.add(levelLabel);
 		
 		userCountLabel = new JLabel(Integer.toString(userCount)+"/2");
 		userCountLabel.setHorizontalAlignment(JLabel.CENTER);
 		userCountLabel.setFont(font4);
+		userCountLabel.setSize(80, 30);
+		userCountLabel.setLocation(420, 0);
 		panel.add(userCountLabel);
 	}
 
@@ -42,5 +49,8 @@ public class RoomListPanel {
 		return panel;
 	}
 	
+	public int getRoomId() {
+		return Integer.parseInt(roomIdLabel.getText());
+	}
 	
 }

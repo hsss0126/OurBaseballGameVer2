@@ -6,8 +6,9 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -17,12 +18,10 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.plaf.ListUI;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -92,8 +91,11 @@ public class WaitingPanel extends JPanel{
 		private JSONParser parser;
 		
 		private RoomInfoConnection roomInfoConnection;
-		private List<RoomInfo> createdRoomList;
+		private List<RoomInfo> createdRoomList = new ArrayList<RoomInfo>();
 		private String createdRoom;
+		private String orderIndex;
+		private String selectedRoom;
+		private RoomInfo joinRoomInfo;
 		
 		private UserConnection userConnection;
 		private List<User> onlineList;
@@ -112,9 +114,9 @@ public class WaitingPanel extends JPanel{
 		
 		userConnection = new UserConnection();
 		roomInfoConnection = new RoomInfoConnection();
-		record = String.format("%d승 / %d패 (%.1f%%)", myInfo.getWin(),myInfo.getLose(),myInfo.getRate());
+		record = String.format("%d승 / %d패 (%.1f%%)", myInfo.getWin(), myInfo.getLose(), myInfo.getRate());
+		System.out.println(record);
 		onlineUser = userConnection.listConnection();
-		System.out.println(onlineUser);
 		try {
 			parser = new JSONParser();
 			JSONArray userList =(JSONArray) parser.parse(onlineUser);
@@ -133,25 +135,7 @@ public class WaitingPanel extends JPanel{
 		} catch(ParseException e) {
 			e.printStackTrace();
 		}
-		
-		createdRoom = roomInfoConnection.listConnection(Integer.toString(0));
-		try {
-			JSONArray roomList = (JSONArray) parser.parse(createdRoom);
-			createdRoomList = new ArrayList<RoomInfo>();
-			for(int i=0; i<roomList.size(); i++) {
-            	JSONObject obj = (JSONObject) roomList.get(i);
-            	RoomInfo roomInfo = new RoomInfo();
-            	roomInfo.setId(Integer.parseInt((String)obj.get("id")));
-            	roomInfo.setRoomName((String) obj.get("roomName"));
-            	roomInfo.setHostId(Integer.parseInt((String)obj.get("hostId")));
-            	roomInfo.setHostName((String)obj.get("hostName"));
-            	roomInfo.setLevel(Integer.parseInt((String)obj.get("level")));
-            	roomInfo.setUserCount(Integer.parseInt((String) obj.get("userCount")));
-            	createdRoomList.add(roomInfo);
-            }
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		orderIndex = "0";
 		
 		border = new BevelBorder(BevelBorder.RAISED);//3차원적인 테두리 효과를 위한것이고 양각의 옵션을 줌
 		
@@ -180,6 +164,8 @@ public class WaitingPanel extends JPanel{
 		
 		details_1();
 		details_2();
+		
+		initRoomList(orderIndex);
 		
 	}
 	
@@ -265,7 +251,12 @@ public class WaitingPanel extends JPanel{
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							// TODO Auto-generated method stub
-							
+							if(orderIndex.equals("0")) {
+								orderIndex = "1";
+							} else {
+								orderIndex = "0";
+							}
+							initRoomList(orderIndex);
 						}
 					});
 				roomTitlePanel.add(roomNoLabel);
@@ -283,7 +274,12 @@ public class WaitingPanel extends JPanel{
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							// TODO Auto-generated method stub
-							
+							if(orderIndex.equals("2")) {
+								orderIndex = "3";
+							} else {
+								orderIndex = "2";
+							}
+							initRoomList(orderIndex);
 						}
 					});
 				roomTitlePanel.add(roomNameLabel);
@@ -301,7 +297,12 @@ public class WaitingPanel extends JPanel{
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							// TODO Auto-generated method stub
-							
+							if(orderIndex.equals("4")) {
+								orderIndex = "5";
+							} else {
+								orderIndex = "4";
+							}
+							initRoomList(orderIndex);
 						}
 					});
 				roomTitlePanel.add(levelLabel);
@@ -319,7 +320,12 @@ public class WaitingPanel extends JPanel{
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							// TODO Auto-generated method stub
-							
+							if(orderIndex.equals("6")) {
+								orderIndex = "7";
+							} else {
+								orderIndex = "6";
+							}
+							initRoomList(orderIndex);
 						}
 					});
 				roomTitlePanel.add(userCountLabel);
@@ -334,16 +340,71 @@ public class WaitingPanel extends JPanel{
 				roomListPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),""));		
 		roomInfoPanel.add(roomListPanel);
 		
-		for(RoomInfo roomInfo : createdRoomList) {
-				RoomListPanel panel = new RoomListPanel(roomInfo.getId(), roomInfo.getRoomName(), roomInfo.getLevel(), roomInfo.getUserCount());
-				roomListModel.addElement(panel);	
-		}
 		roomList = new JList<RoomListPanel>(roomListModel);
 			roomList.setCellRenderer(new RoomListRenderer());
 			roomList.setBackground(Color.white);
 			roomList.setFont(font4);
 			roomList.setFixedCellHeight(30);
-			
+			roomList.addMouseListener(new MouseListener() {
+
+				@SuppressWarnings("unchecked")
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// TODO Auto-generated method stub
+					JList<RoomListPanel> list = (JList<RoomListPanel>) e.getSource();
+					if(e.getClickCount() == 2) {
+						RoomListPanel panel = (RoomListPanel) list.getSelectedValue();
+						
+						joinRoomInfo = new RoomInfo();
+						joinRoomInfo.setId(panel.getRoomId());
+						joinRoomInfo.setAwayId(myInfo.getId());
+						joinRoomInfo.setUserCount(2);
+
+						selectedRoom = roomInfoConnection.updateConnection(joinRoomInfo);
+						System.out.println("입장한 방 정보"+selectedRoom);
+						try {
+							parser = new JSONParser();	
+							JSONObject json = (JSONObject) parser.parse(selectedRoom);
+							joinRoomInfo.setId(Integer.parseInt((String)json.get("id")));
+							joinRoomInfo.setHostId(Integer.parseInt((String)json.get("hostId")));
+							joinRoomInfo.setHostName((String)json.get("hostName"));
+							joinRoomInfo.setAwayId(Integer.parseInt((String)json.get("awayId")));
+							joinRoomInfo.setAwayName((String)json.get("awayName"));
+							joinRoomInfo.setLevel(Integer.parseInt((String)json.get("level")));
+							joinRoomInfo.setUserCount(Integer.parseInt((String)json.get("userCount")));
+							mainFrame.setMyRoomInfo(joinRoomInfo);
+						} catch(ParseException pe) {
+							pe.printStackTrace();
+						}
+						mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
+					}
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
 			roomListPanel.add(new JScrollPane(roomList),"Center");	//대화창패널에 리스트붙이기
 		roomInfoPanel.add(roomListPanel);
 				
@@ -465,6 +526,34 @@ public class WaitingPanel extends JPanel{
 			talkListPanel.add(new JScrollPane(talkList),"Center");	//대화창패널에 리스트붙이기
 		two.add(talkingPanel);
 		
+	}
+	
+	void initRoomList(String orderIndex){
+		createdRoom = roomInfoConnection.listConnection(orderIndex);
+		try {
+			JSONArray roomList = (JSONArray) parser.parse(createdRoom);
+			createdRoomList.clear();
+			for(int i=0; i<roomList.size(); i++) {
+            	JSONObject obj = (JSONObject) roomList.get(i);
+            	RoomInfo roomInfo = new RoomInfo();
+            	roomInfo.setId(Integer.parseInt((String)obj.get("id")));
+            	roomInfo.setRoomName((String) obj.get("roomName"));
+            	roomInfo.setHostId(Integer.parseInt((String)obj.get("hostId")));
+            	roomInfo.setHostName((String)obj.get("hostName"));
+            	roomInfo.setLevel(Integer.parseInt((String)obj.get("level")));
+            	roomInfo.setUserCount(Integer.parseInt((String) obj.get("userCount")));
+            	createdRoomList.add(roomInfo);
+            }
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		roomListModel.clear();
+		for(RoomInfo roomInfo : createdRoomList) {
+			RoomListPanel panel = new RoomListPanel(roomInfo.getId(), roomInfo.getRoomName(), roomInfo.getLevel(), roomInfo.getUserCount());
+			roomListModel.addElement(panel);	
+		}
+		roomList.setModel(roomListModel);
 	}
 	
 	

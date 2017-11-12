@@ -126,7 +126,7 @@ public class UserConnection {
 		String result;
 		try {
 			String nickName = URLEncoder.encode(arg[0], "UTF-8");
-			url = new URL(URLs.url+"user/infowithNickName?nickName="+nickName);
+			url = new URL(URLs.url+"user/infobyNickName?nickName="+nickName);
 			conn = (HttpURLConnection) url.openConnection();
 			
 			conn.setReadTimeout(10000);

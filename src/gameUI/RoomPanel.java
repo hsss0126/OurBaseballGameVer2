@@ -554,7 +554,7 @@ public class RoomPanel extends JPanel implements Runnable{
 					System.out.println(myRoomInfo.toString());
 					break;
 				}
-				Thread.sleep(3000);
+				Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

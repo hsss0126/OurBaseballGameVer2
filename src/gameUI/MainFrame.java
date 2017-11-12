@@ -25,19 +25,17 @@ public class MainFrame extends JFrame{
 //----------------------------------------------------
 
 	private JSONParser parser;
-	private String myNickName;
 	private String result;
 	private User myInfo;
 	private RoomInfo myRoomInfo;
 	
 	public MainFrame(String nickName) {
-		this.myNickName = nickName;
 		myInfo = new User();
+		myInfo.setNickName(nickName);
 		initialize();
 	}
 	
 	private void initialize() {
-		userConnection = new UserConnection();
 	
 		getContentPane().setLayout(cards);	//카드레이아웃
 		setBackground(Color.WHITE);
@@ -50,14 +48,13 @@ public class MainFrame extends JFrame{
 		
 		userConnection = new UserConnection();
 		
-		result = userConnection.infoConnection(myNickName);
+		result = userConnection.infoConnection(myInfo.getNickName());
 		System.out.println(result);
 		
 		try {
 			parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(result);
 			myInfo.setId(Integer.parseInt((String)json.get("id")));
-			myInfo.setNickName((String) json.get("nickName"));
 			myInfo.setWin(Integer.parseInt((String)json.get("win")));
 			myInfo.setLose(Integer.parseInt((String)json.get("lose")));
 			myInfo.setStateName((String) json.get("stateName"));
