@@ -2,8 +2,10 @@ package gameUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -45,7 +47,6 @@ public class RoomPanel extends JPanel implements Runnable{
 				private JLabel hostNameText;
 				private JLabel hostRecordLabel;		//host전적
 				private JLabel hostRecordText;
-				private JLabel hostStateLabel;		//host상태
 				private JLabel hostStateText;
 				
 			private JPanel awayPanel;
@@ -54,7 +55,6 @@ public class RoomPanel extends JPanel implements Runnable{
 				private JLabel awayNameText;
 				private JLabel awayRecordLabel;		//away전적
 				private JLabel awayRecordText;
-				private JLabel awayStateLabel;		//away상태
 				private JLabel awayStateText;
 				
 			private JPanel controlPanel;
@@ -73,8 +73,6 @@ public class RoomPanel extends JPanel implements Runnable{
 				private JLabel numInputLabel1;		//숫자입력
 				private JLabel numInputLabel2;
 				private JTextField numInputText;
-				private JCheckBox check;			//숫자입력 후 체크
-				private JLabel checkLabel;			//경고문
 				private JButton readyBtn;
 				private JButton startBtn;
 		
@@ -89,8 +87,6 @@ public class RoomPanel extends JPanel implements Runnable{
 		
 		private Color color1 = new Color(202,236,244);	//연하늘
 		private Color color2 = new Color(30,204,208);	//청록
-		private Color color3 = new Color(255,201,221);	//연핑
-		private Color color4 = new Color(216,167,216);	//연보라
 		private Color color5 = new Color(217,211,210);	//연그레이
 		private Color color6 = new Color(92,84,82);		//조금 더 진한 연그레이
 		
@@ -109,7 +105,9 @@ public class RoomPanel extends JPanel implements Runnable{
 		setSize(800,600);
 		//setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
-		setLocation(1100,100);
+		Dimension frameSize = this.getSize();	//프레임크기
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();	//모니터크기
+		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 		
 		border = new BevelBorder(BevelBorder.RAISED);//3차원적인 테두리 효과를 위한것이고 양각의 옵션을 줌
 		
@@ -150,6 +148,38 @@ public class RoomPanel extends JPanel implements Runnable{
 				hPanel.setLocation(7, 7);
 				hPanel.setBorder(new TitledBorder(new LineBorder(color1, 8), "  내 정 보   ", 0, 0, new Font("맑은 고딕",Font.BOLD,20),Color.black));
 				
+				hostNameLabel = new JLabel("닉 네 임");
+				hostNameLabel.setOpaque(true);
+				hostNameLabel.setBackground(Color.white);
+				hostNameLabel.setFont(new Font("맑은 고딕",Font.BOLD,18));
+				hostNameLabel.setSize(200, 30);
+				hostNameLabel.setLocation(25, 40);
+			hPanel.add(hostNameLabel);
+			
+			hostNameText = new JLabel("NULL");
+				hostNameText.setOpaque(true);
+				hostNameText.setBackground(Color.white);
+				hostNameText.setFont(new Font("맑은 고딕",Font.BOLD,16));
+				hostNameText.setSize(150, 30);
+				hostNameText.setLocation(55, 75);
+			hPanel.add(hostNameText);
+			
+			hostRecordLabel = new JLabel("전 적");
+				hostRecordLabel.setOpaque(true);
+				hostRecordLabel.setBackground(Color.white);
+				hostRecordLabel.setFont(new Font("맑은 고딕",Font.BOLD,18));
+				hostRecordLabel.setSize(200, 30);
+				hostRecordLabel.setLocation(25, 120);
+			hPanel.add(hostRecordLabel);
+			
+			hostRecordText = new JLabel("NULL");
+				hostRecordText.setOpaque(true);
+				hostRecordText.setBackground(Color.white);
+				hostRecordText.setFont(new Font("맑은 고딕",Font.BOLD,16));
+				hostRecordText.setSize(150, 30);
+				hostRecordText.setLocation(55, 155);
+			hPanel.add(hostRecordText);
+				
 				hostStateText = new JLabel("  준 비 완 료  ");
 					hostStateText.setForeground(Color.white);
 					hostStateText.setBackground(color1);
@@ -180,18 +210,49 @@ public class RoomPanel extends JPanel implements Runnable{
 			aPanel.setLocation(7, 7);
 			aPanel.setBorder(new TitledBorder(new LineBorder(color5, 8), "  상 대 방   ", 0, 0, new Font("맑은 고딕",Font.BOLD,20), Color.black));
 			
+			awayNameLabel = new JLabel("닉 네 임");
+			awayNameLabel.setOpaque(true);
+			awayNameLabel.setBackground(Color.white);
+			awayNameLabel.setFont(new Font("맑은 고딕",Font.BOLD,18));
+			awayNameLabel.setSize(200, 30);
+			awayNameLabel.setLocation(25, 40);
+		aPanel.add(awayNameLabel);
+		
+		awayNameText = new JLabel("NULL");
+			awayNameText.setOpaque(true);
+			awayNameText.setBackground(Color.white);
+			awayNameText.setFont(new Font("맑은 고딕",Font.BOLD,16));
+			awayNameText.setSize(150, 30);
+			awayNameText.setLocation(55, 75);
+		aPanel.add(awayNameText);
+	
+		awayRecordLabel = new JLabel("전 적");
+			awayRecordLabel.setOpaque(true);
+			awayRecordLabel.setBackground(Color.white);
+			awayRecordLabel.setFont(new Font("맑은 고딕",Font.BOLD,18));
+			awayRecordLabel.setSize(200, 30);
+			awayRecordLabel.setLocation(25, 120);
+		aPanel.add(awayRecordLabel);
+	
+		awayRecordText = new JLabel("NULL");
+			awayRecordText.setOpaque(true);
+			awayRecordText.setBackground(Color.white);
+			awayRecordText.setFont(new Font("맑은 고딕",Font.BOLD,16));
+			awayRecordText.setSize(150, 30);
+			awayRecordText.setLocation(55, 155);
+		aPanel.add(awayRecordText);
+	
 			awayStateText = new JLabel("  준 비 완 료  ");
-			awayStateText.setForeground(Color.white);
-			awayStateText.setBackground(color5);
-			awayStateText.setOpaque(true);
-			awayStateText.setFont(new Font("맑은 고딕",Font.BOLD,28));
-			awayStateText.setSize(240, 50);
-			awayStateText.setLocation(5, 200);
-			awayStateText.setHorizontalAlignment(JLabel.CENTER);
+				awayStateText.setForeground(Color.white);
+				awayStateText.setBackground(color5);
+				awayStateText.setOpaque(true);
+				awayStateText.setFont(new Font("맑은 고딕",Font.BOLD,28));
+				awayStateText.setSize(240, 50);
+				awayStateText.setLocation(5, 200);
+				awayStateText.setHorizontalAlignment(JLabel.CENTER);
 			aPanel.add(awayStateText);
 			
 			awayPanel.add(aPanel);
-			
 		onePanel.add(awayPanel);
 		
 		//control패널
@@ -203,7 +264,8 @@ public class RoomPanel extends JPanel implements Runnable{
 			controlPanel.setBorder(new BevelBorder(BevelBorder.RAISED)); //테두리설정
 			
 			roomNumLabel = new JLabel(" No. ");
-				roomNumLabel.setBackground(Color.white);
+				roomNumLabel.setBackground(color1);
+				roomNumLabel.setOpaque(true);
 				roomNumLabel.setFont(new Font("맑은 고딕",Font.BOLD|Font.ITALIC,12));
 				roomNumLabel.setSize(35, 30);
 				roomNumLabel.setLocation(5, 10);
@@ -219,7 +281,8 @@ public class RoomPanel extends JPanel implements Runnable{
 			
 			
 			roomNameLabel = new JLabel(" 방이름 ");
-				roomNameLabel.setBackground(Color.white);
+				roomNameLabel.setBackground(color1);
+				roomNameLabel.setOpaque(true);
 				roomNameLabel.setFont(new Font("맑은 고딕",Font.BOLD|Font.ITALIC,12));
 				roomNameLabel.setSize(50, 30);
 				roomNameLabel.setLocation(70, 10);
@@ -298,12 +361,14 @@ public class RoomPanel extends JPanel implements Runnable{
 					panel.add(level3);
 					
 					//난이도 수정버튼
+					numInputText = new JTextField();
 					editBtn = new JButton("edit");
-						editBtn.setBackground(Color.lightGray);
+						editBtn.setBackground(color2);
 						editBtn.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 10));
 						editBtn.setForeground(Color.black);
 						editBtn.setSize(55, 20);
 						editBtn.setLocation(115, 70);
+						editBtn.setBorder(new MatteBorder(1,1,1,1, color6));
 						
 						editBtn.addActionListener(new ActionListener() {
 							
@@ -314,10 +379,7 @@ public class RoomPanel extends JPanel implements Runnable{
 									level1.setEnabled(true);
 									level2.setEnabled(true);
 									level3.setEnabled(true);
-								}else {
-									level1.setEnabled(false);
-									level2.setEnabled(false);
-									level3.setEnabled(false);
+									numInputText.setEnabled(false);	//수정완료 전까지는 숫자입력 불가
 								}
 							}
 						});
@@ -325,11 +387,12 @@ public class RoomPanel extends JPanel implements Runnable{
 					
 					//수정완료 버튼
 					okBtn = new JButton("ok");
-						okBtn.setBackground(Color.lightGray);
+						okBtn.setBackground(color2);
 						okBtn.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 10));
 						okBtn.setForeground(Color.black);
 						okBtn.setSize(55, 20);
 						okBtn.setLocation(172, 70);
+						okBtn.setBorder(new MatteBorder(1,1,1,1, color6));
 						
 						okBtn.addActionListener(new ActionListener() {
 							
@@ -340,6 +403,7 @@ public class RoomPanel extends JPanel implements Runnable{
 									level1.setEnabled(false);
 									level2.setEnabled(false);
 									level3.setEnabled(false);
+									numInputText.setEnabled(true);	//수정완료 후 숫자입력 가능
 								}
 							}
 						});
@@ -363,7 +427,7 @@ public class RoomPanel extends JPanel implements Runnable{
 			controlPanel.add(numInputLabel2);
 			
 			//숫자입력 란
-			numInputText = new JTextField();
+			//numInputText = new JTextField();
 				numInputText.setFont(new Font("맑은고딕",Font.BOLD,35));
 				numInputText.setSize(150, 40);
 				numInputText.setLocation(85, 170);
@@ -405,18 +469,15 @@ public class RoomPanel extends JPanel implements Runnable{
 						if(level2.isSelected() == true) {
 							if(numInputText.getText().length() >=4) {
 								if(readyBtn.getText().toString() == " E D I T ") {
-									hostStateText.setText("  대 기 상 태 ");
-									hostStateText.setForeground(Color.BLUE);
+									hostStateText.setVisible(false);
 									readyBtn.setText(" R E A D Y ");
 									numInputText.setEnabled(true);
 								}else {
-									hostStateText.setText("  준 비 완 료  ");
-									hostStateText.setForeground(Color.red);
+									hostStateText.setVisible(true);
 									numInputText.setEnabled(false);
 									readyBtn.setText(" E D I T ");
 								}
 							}else {
-								hostStateText.setText("  대 기 상 태  ");
 								JOptionPane.showMessageDialog(mainFrame, "자릿수에 맞게 숫자를 입력헤주세요!", "확인 메세지", JOptionPane.WARNING_MESSAGE);
 							}
 						}
@@ -425,24 +486,21 @@ public class RoomPanel extends JPanel implements Runnable{
 						if(level3.isSelected() == true) {
 							if(numInputText.getText().length() >=5) {
 								if(readyBtn.getText().toString() == " E D I T ") {
-									hostStateText.setText("  대 기 상 태 ");
-									hostStateText.setForeground(Color.BLUE);
+									hostStateText.setVisible(false);
 									readyBtn.setText(" R E A D Y ");
 									numInputText.setEnabled(true);
 								}else {
-									hostStateText.setText("  준 비 완 료  ");
-									hostStateText.setForeground(Color.red);
+									hostStateText.setVisible(true);
 									numInputText.setEnabled(false);
 									readyBtn.setText(" E D I T ");
 								}
 							}else {
-								hostStateText.setText("  대 기 상 태  ");
 								JOptionPane.showMessageDialog(mainFrame, "자릿수에 맞게 숫자를 입력헤주세요!", "확인 메세지", JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					}
 				});
-			//controlPanel.add(readyBtn);
+			controlPanel.add(readyBtn);
 			
 			//시작버튼
 			startBtn = new JButton(" S T A R T ");
@@ -460,7 +518,7 @@ public class RoomPanel extends JPanel implements Runnable{
 						mainFrame.getCardLayout().show(mainFrame.getContentPane(), "GamePanel");	//시작버튼클릭시 게임화면으로 전환
 					}
 				});
-			controlPanel.add(startBtn);
+			//controlPanel.add(startBtn);
 			
 		onePanel.add(controlPanel);
 
