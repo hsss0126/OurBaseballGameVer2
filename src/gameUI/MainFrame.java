@@ -2,6 +2,8 @@ package gameUI;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -40,7 +42,9 @@ public class MainFrame extends JFrame{
 		setSize(800,600);
 		//setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
-		setLocation(1100,100);
+		Dimension frameSize = this.getSize();	//프레임크기
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();	//모니터크기
+		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 		setResizable(false);	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		

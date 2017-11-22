@@ -7,8 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import java.awt.GridLayout;
+import java.awt.Toolkit;
+
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
@@ -16,7 +19,7 @@ import javax.swing.border.MatteBorder;
 import connection.UserConnection;
 import etc.ResponseCode;
 
-
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -29,8 +32,7 @@ public class LoginFrame extends JFrame{
 	private static final long serialVersionUID = 1L;
 //------------------------------------------------------------
 	private JPanel imagePanel;
-		private JPanel one;
-	
+
 	private JPanel loginPanel;
 		private JPanel two;
 		private JLabel nickNameLabel;
@@ -39,6 +41,8 @@ public class LoginFrame extends JFrame{
 		private JPasswordField passwordField;
 		private JButton loginBtn;
 		private JButton joinBtn;
+		
+		private JLabel drawLabel1;
 
 	private Font font = new Font("맑은 고딕",Font.BOLD,18);
 	
@@ -70,12 +74,17 @@ public class LoginFrame extends JFrame{
 	private void initialize() {
 		userConnection = new UserConnection();
 		
+		ImageIcon imgicon = new ImageIcon("icon.jpg");
+		setIconImage(imgicon.getImage());
+		
 		setLayout(new GridLayout(2,1));
 		setBackground(Color.WHITE);
 		setSize(400,600);
 		//setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
-		setLocation(1100,100);
+		Dimension frameSize = this.getSize();	//프레임크기
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();	//모니터크기
+		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 		setResizable(false);	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -83,6 +92,14 @@ public class LoginFrame extends JFrame{
 		imagePanel = new JPanel();
 			imagePanel.setBackground(Color.WHITE);
 			imagePanel.setLayout(null);
+			
+			//이미지 넣기
+			drawLabel1 = new JLabel();
+				ImageIcon icon1 = new ImageIcon(getClass().getClassLoader().getResource("image4.jpg"));
+				drawLabel1.setIcon(icon1);
+				drawLabel1.setSize(370,300);
+				drawLabel1.setLocation(85,15);
+			imagePanel.add(drawLabel1);
 		add(imagePanel);
 		
 		//로그인 정보 입력 란

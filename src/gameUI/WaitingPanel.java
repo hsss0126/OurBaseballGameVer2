@@ -83,7 +83,6 @@ public class WaitingPanel extends JPanel {
 		private Color color1 = new Color(202,236,244);	//연하늘
 		private Color color2 = new Color(30,204,208);	//청록
 		private Color color3 = new Color(255,201,221);	//연핑
-		private Color color4 = new Color(216,167,216);	//연보라
 		private Color color5 = new Color(217,211,210);	//연그레이
 		private Color color6 = new Color(92,84,82);		//조금 더 진한 연그레이
 
@@ -142,8 +141,7 @@ public class WaitingPanel extends JPanel {
 		setSize(800,600);
 		//setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
-		setLocation(1100,100);
-		
+	
 		/* 내정보 & 방만들기 */
 		one = new JPanel();
 			one.setBackground(Color.white);
@@ -287,7 +285,7 @@ public class WaitingPanel extends JPanel {
 				levelLabel = new JButton("난이도");
 					levelLabel.setBackground(color5);
 					levelLabel.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 17));
-					levelLabel.setSize(90, 30);
+					levelLabel.setSize(80, 30);
 					levelLabel.setLocation(340, 0);
 					levelLabel.setBorder(new MatteBorder(3,0,3,3, color6));
 					levelLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -312,7 +310,7 @@ public class WaitingPanel extends JPanel {
 					userCountLabel.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 17));
 					userCountLabel.setSize(80, 30);
 					userCountLabel.setLocation(420, 0);
-					userCountLabel.setBorder(new MatteBorder(3,3,3,3, color6));
+					userCountLabel.setBorder(new MatteBorder(3,0,3,3, color6));
 					userCountLabel.setHorizontalAlignment(JLabel.CENTER);
 					
 					userCountLabel.addActionListener(new ActionListener() {

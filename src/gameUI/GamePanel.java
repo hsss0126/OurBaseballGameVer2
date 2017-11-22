@@ -3,6 +3,8 @@ package gameUI;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -18,17 +20,32 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.MatteBorder;
 
 public class GamePanel extends JPanel{
-	
+
 	private static final long serialVersionUID = 1L;
 
 	MainFrame mainFrame;
 	
 	private JPanel onePanel;
 		private JLabel myNumLabel;	//내 숫자
-		private JPanel myNumPanel; 	//그리드3,1
-			private JLabel num1Text;
-			private JLabel num2Text;
-			private JLabel num3Text;
+		
+		private JPanel myNumPanel_level3; 	 //그리드3x1
+			private JLabel num1Text_level3;
+			private JLabel num2Text_level3;
+			private JLabel num3Text_level3;
+			
+		private JPanel myNumPanel_level4; 	 //그리드4x1
+			private JLabel num1Text_level4;
+			private JLabel num2Text_level4;
+			private JLabel num3Text_level4;
+			private JLabel num4Text_level4;
+			
+		private JPanel myNumPanel_level5;	 //그리드5x1
+			private JLabel num1Text_level5;
+			private JLabel num2Text_level5;
+			private JLabel num3Text_level5;
+			private JLabel num4Text_level5;
+			private JLabel num5Text_level5;
+			
 		private JPanel numPanel;	//예상숫자표시
 			private String[] numString = { "0","1","2","3","4","5","6","7","8","9"};
 			private JLabel[] numLabel = new JLabel[10];
@@ -50,6 +67,11 @@ public class GamePanel extends JPanel{
 		
 		private Color color1 = new Color(202,236,244);	//연하늘
 		private Color color2 = new Color(46,38,79);		//네이비
+		private Color color3 = new Color(30,204,208);	//청록
+		private Color color5 = new Color(217,211,210);	//연그레이
+		private Color color6 = new Color(92,84,82);		//조금 더 진한 연그레이
+		private Color color7 = new Color(245,252,254);	//완전 연 하늘
+		private Color color8 = new Color(240,238,238);	//완전 연 그레이
 	
 	public GamePanel(MainFrame mf) {
 		mainFrame = mf;
@@ -64,20 +86,20 @@ public class GamePanel extends JPanel{
 		setVisible(true);
 		setLocation(1100,100);
 		
-		/* 유저 정보 & 방 정보 */
 		onePanel = new JPanel();
-			onePanel.setBackground(Color.lightGray);
+			onePanel.setBackground(color7);
 			onePanel.setLayout(null);
-			onePanel.setSize(800, 200);
+			onePanel.setSize(795, 200);
 			onePanel.setLocation(0, 0);
+			onePanel.setBorder(new MatteBorder(5,5,4,5, color5));
 		add(onePanel);
 		
-		/* 대화창  */
 		twoPanel = new JPanel();
-			twoPanel.setBackground(Color.gray);
+			twoPanel.setBackground(color1);
 			twoPanel.setLayout(null);
-			twoPanel.setSize(800, 400);
+			twoPanel.setSize(795, 365);
 			twoPanel.setLocation(0, 200);
+			twoPanel.setBorder(new MatteBorder(0,5,4,5, color5));
 		add(twoPanel);
 		
 		details_1();
@@ -94,39 +116,133 @@ public class GamePanel extends JPanel{
 			myNumLabel.setLocation(60, 30);
 		onePanel.add(myNumLabel);
 		
-		myNumPanel = new JPanel();
-			myNumPanel.setBackground(Color.white);
-			myNumPanel.setLayout(new GridLayout(1,3));
-			myNumPanel.setSize(210, 70);
-			myNumPanel.setLocation(50, 85);
-			myNumPanel.setBorder(new BevelBorder(BevelBorder.RAISED)); //테두리설정
+		//3자리수 일 경우 숫자 패널
+		myNumPanel_level3 = new JPanel();
+			myNumPanel_level3.setBackground(Color.white);
+			myNumPanel_level3.setLayout(new GridLayout(1,3));
+			myNumPanel_level3.setSize(210, 70);
+			myNumPanel_level3.setLocation(50, 85);
+			myNumPanel_level3.setBorder(new BevelBorder(BevelBorder.RAISED)); //테두리설정
 			
-			num1Text = new JLabel("1");
-			num1Text.setBackground(Color.white);
-			num1Text.setFont(new Font("맑은 고딕",Font.BOLD,40));
-			num1Text.setSize(70, 70);
-			num1Text.setBorder(new MatteBorder(5,5,5,5,Color.black));
-			num1Text.setHorizontalAlignment(JLabel.CENTER);
-			myNumPanel.add(num1Text);
+			num1Text_level3 = new JLabel("1");
+			num1Text_level3.setBackground(Color.white);
+			num1Text_level3.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num1Text_level3.setSize(70, 70);
+			num1Text_level3.setBorder(new MatteBorder(5,5,5,5, color6));
+			num1Text_level3.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level3.add(num1Text_level3);
 			
-			num2Text = new JLabel("1");
-			num2Text.setBackground(Color.white);
-			num2Text.setFont(new Font("맑은 고딕",Font.BOLD,40));
-			num2Text.setSize(70, 70);
-			num2Text.setBorder(new MatteBorder(5,0,5,5,Color.black));
-			num2Text.setHorizontalAlignment(JLabel.CENTER);
-			myNumPanel.add(num2Text);
+			num2Text_level3 = new JLabel("1");
+			num2Text_level3.setBackground(Color.white);
+			num2Text_level3.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num2Text_level3.setSize(70, 70);
+			num2Text_level3.setBorder(new MatteBorder(5,0,5,5, color6));
+			num2Text_level3.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level3.add(num2Text_level3);
 			
-			num3Text = new JLabel("1");
-				num3Text.setBackground(Color.white);
-				num3Text.setFont(new Font("맑은 고딕",Font.BOLD,40));
-				num3Text.setSize(70, 70);
-				num3Text.setBorder(new MatteBorder(5,0,5,5,Color.black));
-				num3Text.setHorizontalAlignment(JLabel.CENTER);
-			myNumPanel.add(num3Text);
-			
-		onePanel.add(myNumPanel);
+			num3Text_level3 = new JLabel("1");
+				num3Text_level3.setBackground(Color.white);
+				num3Text_level3.setFont(new Font("맑은 고딕",Font.BOLD,40));
+				num3Text_level3.setSize(70, 70);
+				num3Text_level3.setBorder(new MatteBorder(5,0,5,5, color6));
+				num3Text_level3.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level3.add(num3Text_level3);
+		//onePanel.add(myNumPanel_level3);
 		
+		//4자리수 일 경우 숫자 패널
+		myNumPanel_level4 = new JPanel();
+			myNumPanel_level4.setBackground(Color.white);
+			myNumPanel_level4.setLayout(new GridLayout(1,4));
+			myNumPanel_level4.setSize(210, 70);
+			myNumPanel_level4.setLocation(40, 85);
+			myNumPanel_level4.setBorder(new BevelBorder(BevelBorder.RAISED)); //테두리설정
+					
+			num1Text_level4 = new JLabel("1");
+			num1Text_level4.setBackground(Color.white);
+			num1Text_level4.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num1Text_level4.setSize(70, 70);
+			num1Text_level4.setBorder(new MatteBorder(5,5,5,5, color6));
+			num1Text_level4.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level4.add(num1Text_level4);
+					
+			num2Text_level4 = new JLabel("1");
+			num2Text_level4.setBackground(Color.white);
+			num2Text_level4.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num2Text_level4.setSize(70, 70);
+			num2Text_level4.setBorder(new MatteBorder(5,0,5,5, color6));
+			num2Text_level4.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level4.add(num2Text_level4);
+					
+			num3Text_level4 = new JLabel("1");
+			num3Text_level4.setBackground(Color.white);
+			num3Text_level4.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num3Text_level4.setSize(70, 70);
+			num3Text_level4.setBorder(new MatteBorder(5,0,5,5, color6));
+			num3Text_level4.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level4.add(num3Text_level4);
+			
+			num4Text_level4 = new JLabel("1");
+			num4Text_level4.setBackground(Color.white);
+			num4Text_level4.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num4Text_level4.setSize(70, 70);
+			num4Text_level4.setBorder(new MatteBorder(5,0,5,5, color6));
+			num4Text_level4.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level4.add(num4Text_level4);
+			
+		//onePanel.add(myNumPanel_level4);
+				
+		//5자리수 일 경우 숫자 패널
+		myNumPanel_level5 = new JPanel();
+			myNumPanel_level5.setBackground(Color.white);
+			myNumPanel_level5.setLayout(new GridLayout(1,5));
+			myNumPanel_level5.setSize(240, 70);
+			myNumPanel_level5.setLocation(30, 85);
+			myNumPanel_level5.setBorder(new BevelBorder(BevelBorder.RAISED)); //테두리설정
+					
+			num1Text_level5 = new JLabel("1");
+			num1Text_level5.setBackground(Color.white);
+			num1Text_level5.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num1Text_level5.setSize(70, 70);
+			num1Text_level5.setBorder(new MatteBorder(5,5,5,5, color6));
+			num1Text_level5.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level5.add(num1Text_level5);
+					
+			num2Text_level5 = new JLabel("1");
+			num2Text_level5.setBackground(Color.white);
+			num2Text_level5.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num2Text_level5.setSize(70, 70);
+			num2Text_level5.setBorder(new MatteBorder(5,0,5,5, color6));
+			num2Text_level5.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level5.add(num2Text_level5);
+					
+			num3Text_level5 = new JLabel("1");
+			num3Text_level5.setBackground(Color.white);
+			num3Text_level5.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num3Text_level5.setSize(70, 70);
+			num3Text_level5.setBorder(new MatteBorder(5,0,5,5, color6));
+			num3Text_level5.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level5.add(num3Text_level5);
+			
+			num4Text_level5 = new JLabel("1");
+			num4Text_level5.setBackground(Color.white);
+			num4Text_level5.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num4Text_level5.setSize(70, 70);
+			num4Text_level5.setBorder(new MatteBorder(5,0,5,5, color6));
+			num4Text_level5.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level5.add(num4Text_level5);
+			
+			num5Text_level5 = new JLabel("1");
+			num5Text_level5.setBackground(Color.white);
+			num5Text_level5.setFont(new Font("맑은 고딕",Font.BOLD,40));
+			num5Text_level5.setSize(70, 70);
+			num5Text_level5.setBorder(new MatteBorder(5,0,5,5, color6));
+			num5Text_level5.setHorizontalAlignment(JLabel.CENTER);
+			myNumPanel_level5.add(num5Text_level5);
+			
+		onePanel.add(myNumPanel_level5);
+		
+		
+		//0123456789
 		numPanel = new JPanel();
 			numPanel.setBackground(Color.white);
 			numPanel.setLayout(new GridLayout(1,10));
@@ -158,10 +274,10 @@ public class GamePanel extends JPanel{
 							// TODO Auto-generated method stub
 							JLabel ob = (JLabel)e.getSource();
 							
-							if(ob.getForeground() ==  Color.red) {
+							if(ob.getForeground() ==  Color.blue) {
 								ob.setForeground(Color.black);
 							}else {
-								ob.setForeground(Color.red);
+								ob.setForeground(Color.blue);
 							}
 							
 						}
@@ -169,9 +285,9 @@ public class GamePanel extends JPanel{
 					
 					//테두리 설정
 					if(i == 0) {	
-						numLabel[i].setBorder(new MatteBorder(3,3,3,3,Color.black));
+						numLabel[i].setBorder(new MatteBorder(3,3,3,3, color6));
 					}else {
-						numLabel[i].setBorder(new MatteBorder(3,0,3,3,Color.black));
+						numLabel[i].setBorder(new MatteBorder(3,0,3,3, color6));
 					}
 				}
 				
@@ -193,10 +309,20 @@ public class GamePanel extends JPanel{
 		onePanel.add(numInputText);
 		
 		sendBtn = new JButton("전 송");
-			sendBtn.setBackground(Color.pink);
+			sendBtn.setBackground(color3);
 			sendBtn.setFont(new Font("맑은 고딕",Font.BOLD,20));
 			sendBtn.setSize(100, 50);
 			sendBtn.setLocation(650, 120);
+			sendBtn.setBorder(new MatteBorder(1,1,1,1, color6));
+			
+			sendBtn.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					//결과창 불러오기 테스트
+					new ResultFrame(mainFrame);
+				}
+			});
 		onePanel.add(sendBtn);
 		
 	}
@@ -242,7 +368,7 @@ public class GamePanel extends JPanel{
 		
 		//상대방 기록판
 		awayRecordPanel = new JPanel();
-			awayRecordPanel.setBackground(Color.white);
+			awayRecordPanel.setBackground(color8);
 			awayRecordPanel.setLayout(new GridLayout(1, 1));
 			awayRecordPanel.setSize(240, 290);
 			awayRecordPanel.setLocation(540,60);
@@ -255,9 +381,9 @@ public class GamePanel extends JPanel{
 				awayRecordLabel.setLocation(540, 0);
 			twoPanel.add(awayRecordLabel);
 			
-			//나의 기록판 List뷰
+			//상대 기록판 List뷰
 			awayRecordList = new JList<String>(awayRecordListModel);
-				awayRecordList.setBackground(color1);
+				awayRecordList.setBackground(color8);
 				awayRecordList.setFont(new Font("맑은 고딕",Font.BOLD,20));
 			awayRecordPanel.add(new JScrollPane(awayRecordList),"Center");	//대화창패널에 리스트붙이기
 		

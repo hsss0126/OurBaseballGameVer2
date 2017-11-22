@@ -84,12 +84,11 @@ public class RoomPanel extends JPanel implements Runnable{
 				private JTextField numInputText;
 				private JButton readyBtn;
 				private JButton startBtn;
+				private JButton exitBtn;
 		
 		//채팅창 패널
 		private JPanel twoPanel;
 			private JPanel talkingPanel;
-				private JList<String> talkList;
-				private DefaultListModel<String> talkListModel = new DefaultListModel<>();
 				private JTextArea talkArea;
 				private JPanel talkListPanel;	//대화창(리스트뷰)
 				private JTextField talkInput;	//대화입력
@@ -154,7 +153,7 @@ public class RoomPanel extends JPanel implements Runnable{
 		details_2();
 		
 		if(initCase[caseIndex].equals("HOST")) {
-			new Thread(this).start();;
+			new Thread(this).start();
 		}
 		
 		client = new ClientBackground();
@@ -383,9 +382,9 @@ public class RoomPanel extends JPanel implements Runnable{
 					if(myInfo.getId()==myRoomInfo.getHostId()) {
 						//난이도 수정버튼
 						numInputText = new JTextField();
-						editBtn = new JButton("edit");
+						editBtn = new JButton("수 정");
 							editBtn.setBackground(color2);
-							editBtn.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 10));
+							editBtn.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 11));
 							editBtn.setForeground(Color.black);
 							editBtn.setSize(55, 20);
 							editBtn.setLocation(115, 70);
@@ -407,9 +406,9 @@ public class RoomPanel extends JPanel implements Runnable{
 						levelPanel.add(editBtn);
 						
 						//수정완료 버튼
-						okBtn = new JButton("ok");
+						okBtn = new JButton("확 인");
 							okBtn.setBackground(color2);
-							okBtn.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 10));
+							okBtn.setFont(new Font("맑은 고딕", Font.BOLD | Font.ITALIC, 11));
 							okBtn.setForeground(Color.black);
 							okBtn.setSize(55, 20);
 							okBtn.setLocation(172, 70);
@@ -526,9 +525,9 @@ public class RoomPanel extends JPanel implements Runnable{
 			//시작버튼
 			startBtn = new JButton(" S T A R T ");
 				startBtn.setBackground(color2);
-				startBtn.setSize(228,50);
-				startBtn.setFont(new Font("맑은 고딕",Font.BOLD,23));
-				startBtn.setLocation(20, 225);
+				startBtn.setSize(120,50);
+				startBtn.setFont(new Font("맑은 고딕",Font.BOLD,20));
+				startBtn.setLocation(10, 225);
 				startBtn.setBorder(new MatteBorder(3,3,3,3, color6));
 			
 				startBtn.addActionListener(new ActionListener() {
@@ -540,6 +539,24 @@ public class RoomPanel extends JPanel implements Runnable{
 					}
 				});
 			//controlPanel.add(startBtn);
+				
+				//나가기 버튼
+				exitBtn = new JButton(" E X I T ");
+				exitBtn.setBackground(color2);
+				exitBtn.setSize(120,50);
+				exitBtn.setFont(new Font("맑은 고딕",Font.BOLD, 20));
+				exitBtn.setLocation(135, 225);
+				exitBtn.setBorder(new MatteBorder(3,3,3,3, color6));
+				
+				exitBtn.addActionListener(new ActionListener() {
+					
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							// TODO Auto-generated method stub
+							mainFrame.getCardLayout().show(mainFrame.getContentPane(), "WaitingPanel");	//대기실로 나가~
+						}
+					});
+				controlPanel.add(exitBtn);			
 			
 		onePanel.add(controlPanel);
 

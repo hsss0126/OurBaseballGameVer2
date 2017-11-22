@@ -1,8 +1,10 @@
 package gameUI;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -55,11 +57,8 @@ public class MakeRoomFrame extends JFrame{
 	private Font font1 = new Font("맑은 고딕",Font.BOLD,15);
 	private Font font2 = new Font("맑은 고딕",Font.BOLD,20);
 	
-	private Color color1 = new Color(202,236,244);	//연하늘
 	private Color color2 = new Color(30,204,208);	//청록
-	private Color color3 = new Color(255,201,221);	//연핑
-	private Color color4 = new Color(216,167,216);	//연보라
-	private Color color5 = new Color(217,211,210);	//연그레이
+	private Color color6 = new Color(92,84,82);		//조금 더 진한 연그레이
 	
 	public MakeRoomFrame(MainFrame mf, User myInfo) {
 		this.myInfo = myInfo;
@@ -75,7 +74,13 @@ public class MakeRoomFrame extends JFrame{
 		setSize(345,265);
 		setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
-		setLocation(1300,250);
+		double width = this.getSize().getWidth()/2;		//프레임크기
+		double height = this.getSize().getHeight()/2;		//프레임크기
+		double x = mainFrame.getLocation().getX();	//모니터크기
+		double y = mainFrame.getLocation().getY();	//모니터크기
+		double mainWidth = mainFrame.getSize().getWidth()/2;
+		double mainHeight = mainFrame.getSize().getHeight()/2;
+		setLocation((int)(x+mainWidth-width), (int)(y+mainHeight-height));
 		setResizable(false);	
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
@@ -104,7 +109,7 @@ public class MakeRoomFrame extends JFrame{
 			roomNameText.setFont(font2);
 			roomNameText.setSize(190, 35);
 			roomNameText.setLocation(115, 45);
-			roomNameText.setDocument(new JTextFieldLimit(10));	//글자수 입력 제한 7자리
+			roomNameText.setDocument(new JTextFieldLimit(10));	//글자수 입력 제한 10자리
 		roomPanel.add(roomNameText);
 		
 		levelPanel = new JPanel();
@@ -143,7 +148,7 @@ public class MakeRoomFrame extends JFrame{
 			okBtn.setFont(font2);
 			okBtn.setSize(130, 40);
 			okBtn.setLocation(40, 210);
-			okBtn.setBorder(new MatteBorder(3,3,3,3, Color.black));
+			okBtn.setBorder(new MatteBorder(3,3,3,3, color6));
 			
 			okBtn.addActionListener(new ActionListener() {
 				
@@ -189,7 +194,7 @@ public class MakeRoomFrame extends JFrame{
 			closeBtn.setFont(font2);
 			closeBtn.setSize(130, 40);
 			closeBtn.setLocation(180, 210);
-			closeBtn.setBorder(new MatteBorder(3,3,3,3, Color.black));
+			closeBtn.setBorder(new MatteBorder(3,3,3,3, color6));
 			
 			closeBtn.addActionListener(new ActionListener() {
 					@Override

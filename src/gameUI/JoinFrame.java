@@ -1,11 +1,14 @@
 package gameUI;
 
 import java.awt.Font;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 
@@ -19,7 +22,6 @@ import java.awt.event.ActionEvent;
 
 public class JoinFrame extends JFrame{
 
-//---------------------------------------------------------------
 	private static final long serialVersionUID = 1L;
 	
 	private JPanel joinPanel;
@@ -57,9 +59,10 @@ public class JoinFrame extends JFrame{
 		setLayout(null);
 		setBackground(Color.WHITE);
 		setSize(400,600);
-		//setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
-		setLocation(1100,100);
+		Dimension frameSize = this.getSize();	//프레임크기
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();	//모니터크기
+		setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
 		setResizable(false);	
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
