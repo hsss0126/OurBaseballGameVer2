@@ -78,7 +78,7 @@ public class RoomInfo {
 	@Override
 	public String toString() {
 		return "RoomInfo [id=" + id + ", roomName=" + roomName + ", hostId=" + hostId + ", hostName=" + hostName
-				+ ", awayId=" + ", awayName=" +  ", level=" + level + ", userCount=" + userCount
+				+ ", awayId=" + awayId + ", awayName=" + awayName + ", level=" + level + ", userCount=" + userCount
 				+ "]";
 	}
 

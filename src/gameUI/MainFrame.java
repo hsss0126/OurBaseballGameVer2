@@ -19,11 +19,9 @@ public class MainFrame extends JFrame{
 	private static final long serialVersionUID = 1L;
 //----------------------------------------------------
 	private UserConnection userConnection;
-	private MakeRoomFrame makeRoom;
 	
 	private CardLayout cards = new CardLayout();
 //----------------------------------------------------
-
 	private JSONParser parser;
 	private String result;
 	private User myInfo;
@@ -48,7 +46,7 @@ public class MainFrame extends JFrame{
 		
 		userConnection = new UserConnection();
 		
-		result = userConnection.infoConnection(myInfo.getNickName());
+		result = userConnection.findByNickNameConnection(myInfo.getNickName());
 		System.out.println(result);
 		
 		try {
@@ -62,18 +60,31 @@ public class MainFrame extends JFrame{
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		getContentPane().add("WaitingPanel", new WaitingPanel(this, myInfo));
-		getContentPane().add("RoomPanel", new RoomPanel(this));
-		getContentPane().add("GamePanel", new GamePanel(this));			//게임 화면 GamePanel패널 부착
+		getContentPane().add("WaitingPanel", new WaitingPanel(this));
 
 	}
+	public void addRoomPanel(int initIndex) {
+		getContentPane().add("RoomPanel", new RoomPanel(this, initIndex));
+	}
 	
-	public void  changePanel() {
+	public void addGamePanel() {
+		getContentPane().add("GamePanel", new GamePanel(this));			//게임 화면 GamePanel패널 부착
+	}
+	
+	public void changePanel() {
 		cards.next(this.getContentPane());
 	}
 	
 	public CardLayout getCardLayout() {
 		return cards;
+	}
+
+	public User getMyInfo() {
+		return myInfo;
+	}
+
+	public void setMyInfo(User myInfo) {
+		this.myInfo = myInfo;
 	}
 
 	public RoomInfo getMyRoomInfo() {

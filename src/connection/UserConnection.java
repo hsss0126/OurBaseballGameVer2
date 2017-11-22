@@ -116,17 +116,56 @@ public class UserConnection {
 	}
 	
 	/**
+	 * id로 회원정보 받아오는 메소드
+	 * @param id
+	 * @return 조회된 회원정보
+	 */
+	public String findByIdConnection(String ...arg) {
+		URL url;
+		HttpURLConnection conn = null;
+		String result;
+		try {
+			String id = URLEncoder.encode(arg[0], "UTF-8");
+			url = new URL(URLs.url+"user/findById?id="+id);
+			conn = (HttpURLConnection) url.openConnection();
+			
+			conn.setReadTimeout(10000);
+			conn.setConnectTimeout(10000);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Cache-Control", "no-cache");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setDoInput(true);
+			conn.setDoOutput(false);
+			System.out.println("연결 세팅");
+			
+			System.out.println(conn.getResponseCode());
+			if(conn.getResponseCode() == 200) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				while((result = br.readLine())!=null) {
+					return result;
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		result = Integer.toString(ResponseCode.connect_error);
+		return result; 	
+	}
+	
+	/**
 	 * 닉네임으로 회원정보 받아오는 메소드
 	 * @param nickName
 	 * @return 조회된 회원정보
 	 */
-	public String infoConnection(String ...arg) {
+	public String findByNickNameConnection(String ...arg) {
 		URL url;
 		HttpURLConnection conn = null;
 		String result;
 		try {
 			String nickName = URLEncoder.encode(arg[0], "UTF-8");
-			url = new URL(URLs.url+"user/infobyNickName?nickName="+nickName);
+			url = new URL(URLs.url+"user/findByNickName?nickName="+nickName);
 			conn = (HttpURLConnection) url.openConnection();
 			
 			conn.setReadTimeout(10000);

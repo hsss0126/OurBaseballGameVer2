@@ -28,9 +28,6 @@ public class LoginFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 //------------------------------------------------------------
-	private JoinFrame joinFrame; //회원가입창
-	private MainFrame mainFrame; 
-	
 	private JPanel imagePanel;
 		private JPanel one;
 	
@@ -147,7 +144,7 @@ public class LoginFrame extends JFrame{
 				@Override
 	 			public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
-	 				joinFrame = new JoinFrame();	//회원가입버튼 클릭시 회원가입 창 띄우기
+	 				new JoinFrame();	//회원가입버튼 클릭시 회원가입 창 띄우기
 	 			}
 	 		});
 		two.add(joinBtn);
@@ -176,7 +173,7 @@ public class LoginFrame extends JFrame{
 						break;
 					case ResponseCode.user_login_success:
 						System.out.println("로그인 성공");
-						mainFrame = new MainFrame(nickName);
+						new MainFrame(nickName);
 						dispose();
 						break;
 					case ResponseCode.user_id_error:

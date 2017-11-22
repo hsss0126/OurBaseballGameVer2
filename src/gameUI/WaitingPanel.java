@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
@@ -28,6 +29,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import client.ClientBackground;
 import connection.RoomInfoConnection;
 import connection.UserConnection;
 import dto.RoomInfo;
@@ -35,10 +37,9 @@ import dto.User;
 import listrenderer.OnlineUserRenderer;
 import listrenderer.RoomListRenderer;
 
-public class WaitingPanel extends JPanel{
+public class WaitingPanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
-	private MakeRoomFrame makeRoom;
 	private MainFrame mainFrame;
 	
 	//내정보&방만들기
@@ -69,8 +70,7 @@ public class WaitingPanel extends JPanel{
 				private JLabel waitingLabel1;
 				private JLabel waitingLabel2;
 			private JPanel talkingPanel;
-				private JList<String> talkList;
-				private DefaultListModel<String> talkListModel = new DefaultListModel<>();
+				private JTextArea talkArea;
 				private JPanel talkListPanel;	//대화창(리스트뷰)
 				private JTextField talkInput;	//대화입력
 				private JButton talkBtn;		//대화전송
@@ -100,22 +100,20 @@ public class WaitingPanel extends JPanel{
 		private UserConnection userConnection;
 		private List<User> onlineList;
 		private User myInfo;
-		private String record;
 		private String onlineUser;
+		
+		private ClientBackground client;
 //------------------------------------------------------------------------------------------------------------
 		
-	public WaitingPanel(MainFrame mf, User myInfo){
+	public WaitingPanel(MainFrame mf){
 		mainFrame = mf;
-		this.myInfo = myInfo;
+		this.myInfo = mf.getMyInfo();
 		initialize();
 	}
 
 	private void initialize() {
-		
 		userConnection = new UserConnection();
 		roomInfoConnection = new RoomInfoConnection();
-		record = String.format("%d승 / %d패 (%.1f%%)", myInfo.getWin(), myInfo.getLose(), myInfo.getRate());
-		System.out.println(record);
 		onlineUser = userConnection.listConnection();
 		try {
 			parser = new JSONParser();
@@ -167,13 +165,15 @@ public class WaitingPanel extends JPanel{
 		
 		initRoomList(orderIndex);
 		
+		client = new ClientBackground();
+		client.connect(0, myInfo.getNickName(), this);
 	}
 	
 	
 	/**
 	 *  내정보 & 방만들기
 	**/
-	void details_1() {
+	private void details_1() {
 		//내정보
 		myInfoPanel = new JPanel();
 			myInfoPanel.setBackground(color1);
@@ -218,7 +218,7 @@ public class WaitingPanel extends JPanel{
 				recordText.setFont(font);
 				recordText.setSize(200, 30);
 				recordText.setLocation(50, 190);
-				recordText.setText(record);
+				recordText.setText(myInfo.getRecord());
 			myInfoPanel.add(recordText);
 		one.add(myInfoPanel);
 		
@@ -366,16 +366,19 @@ public class WaitingPanel extends JPanel{
 							parser = new JSONParser();	
 							JSONObject json = (JSONObject) parser.parse(selectedRoom);
 							joinRoomInfo.setId(Integer.parseInt((String)json.get("id")));
+							joinRoomInfo.setRoomName((String)json.get("roomName"));
 							joinRoomInfo.setHostId(Integer.parseInt((String)json.get("hostId")));
 							joinRoomInfo.setHostName((String)json.get("hostName"));
 							joinRoomInfo.setAwayId(Integer.parseInt((String)json.get("awayId")));
 							joinRoomInfo.setAwayName((String)json.get("awayName"));
 							joinRoomInfo.setLevel(Integer.parseInt((String)json.get("level")));
 							joinRoomInfo.setUserCount(Integer.parseInt((String)json.get("userCount")));
+							System.out.println("waiting "+joinRoomInfo.toString());
 							mainFrame.setMyRoomInfo(joinRoomInfo);
 						} catch(ParseException pe) {
 							pe.printStackTrace();
 						}
+						mainFrame.addRoomPanel(1);
 						mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
 					}
 				}
@@ -419,7 +422,7 @@ public class WaitingPanel extends JPanel{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
-					makeRoom = new MakeRoomFrame(mainFrame, myInfo);
+					new MakeRoomFrame(mainFrame, myInfo);
 					
 				}
 			});
@@ -431,7 +434,7 @@ public class WaitingPanel extends JPanel{
 	/**
 	 *  대화창 & 대기실접속자정보
 	**/
-	void details_2() {
+	private void details_2() {
 		//대기실 정보
 		waitingInfoPanel = new JPanel();
 			waitingInfoPanel.setBackground(Color.white);
@@ -511,24 +514,21 @@ public class WaitingPanel extends JPanel{
 				talkBtn.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-							String s = talkInput.getText();
-							talkListModel.addElement(s);
-							talkInput.setText("");
+						String msg = talkInput.getText();
+						client.sendMessage(msg);
 					}
 				});
 			talkingPanel.add(talkBtn);
 			
-			talkList = new JList<String>(talkListModel);	//JList 객체를 생성할 때, 생성자 파라미터로 DefaultListModel 객체를 전달해 주어야 함.
-															//이 DefaultListModel 객체에 담겨진 데이터가, 자동으로 JList 객체에 보여짐.
-			talkList.setBackground(color1);
-			talkList.setFont(font4);
-			talkListPanel.add(new JScrollPane(talkList),"Center");	//대화창패널에 리스트붙이기
+			talkArea = new JTextArea();	
+			talkArea.setBackground(color1);
+			talkArea.setFont(font4);
+			talkListPanel.add(new JScrollPane(talkArea),"Center");	//대화창패널에 talkArea붙이기
 		two.add(talkingPanel);
 		
 	}
 	
-	void initRoomList(String orderIndex){
+	public void initRoomList(String orderIndex){
 		createdRoom = roomInfoConnection.listConnection(orderIndex);
 		try {
 			JSONArray roomList = (JSONArray) parser.parse(createdRoom);
@@ -556,5 +556,8 @@ public class WaitingPanel extends JPanel{
 		roomList.setModel(roomListModel);
 	}
 	
-	
+	public void addChatText(String text) {
+		talkArea.append(text+"\n");
+		talkInput.setText("");
+	}
 }

@@ -57,12 +57,13 @@ public class User {
 		numerator = new BigDecimal(this.getWin());
 		denominator = new BigDecimal(this.getWin()+this.getLose());
 		result = numerator.divide(denominator, 3, BigDecimal.ROUND_DOWN);
-		System.out.println(result.floatValue());
 		result = result.multiply(per);
-		System.out.println("100곱한 후" + result.floatValue());
 		return result.floatValue();
 	}
-	
+
+	public String getRecord() {
+		return String.format("%d승 / %d패 (%.1f%%)", this.getWin(), this.getLose(), this.getRate());
+	}
 
 	@Override
 	public String toString() {

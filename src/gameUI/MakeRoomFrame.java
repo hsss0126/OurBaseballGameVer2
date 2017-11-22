@@ -177,6 +177,7 @@ public class MakeRoomFrame extends JFrame{
 						e1.printStackTrace();
 					}
 					//RoomPanel 불러오기
+					mainFrame.addRoomPanel(0);
 					mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
 					dispose(); 
 				}
