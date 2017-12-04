@@ -68,8 +68,9 @@ public class LoginFrame extends JFrame{
 	private void initialize() {
 		userConnection = new UserConnection();
 		
-		ImageIcon imgicon = new ImageIcon("icon.jpg");
-		setIconImage(imgicon.getImage());
+		//아이콘변경
+		ImageIcon im = new ImageIcon(getClass().getClassLoader().getResource("icon6.png"));
+		setIconImage(im.getImage()); 
 		
 		setLayout(new GridLayout(2,1));
 		setBackground(Color.WHITE);

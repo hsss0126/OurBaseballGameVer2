@@ -8,6 +8,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -470,6 +472,33 @@ public class RoomPanel extends JPanel{
 				numInputText.setSize(150, 40);
 				numInputText.setLocation(85, 170);
 				numInputText.setHorizontalAlignment(JTextField.CENTER);
+				
+				numInputText.addKeyListener(new KeyListener() {
+					
+					//숫자만 입력받음
+					@Override
+					public void keyTyped(KeyEvent e) {
+						// TODO Auto-generated method stub
+						char c = e.getKeyChar();
+						  
+						  if (!Character.isDigit(c)) {
+						   e.consume();
+						   return;
+						  }
+					}
+					
+					@Override
+					public void keyReleased(KeyEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void keyPressed(KeyEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
 			controlPanel.add(numInputText);
 			
 			//레디버튼
