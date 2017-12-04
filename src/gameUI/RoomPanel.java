@@ -32,7 +32,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import client.ClientBackground;
 import connection.RoomInfoConnection;
 import connection.UserConnection;
 import dto.RoomInfo;
@@ -100,7 +99,6 @@ public class RoomPanel extends JPanel{
 		
 		private BevelBorder border;
 		
-		private ClientBackground client;
 		private JSONParser parser;
 		private UserConnection userConnection;
 		private RoomInfoConnection roomInfoConnection;
@@ -398,7 +396,6 @@ public class RoomPanel extends JPanel{
 							
 							@Override
 							public void actionPerformed(ActionEvent e) {
-								// TODO Auto-generated method stub
 									level1.setEnabled(true);
 									level2.setEnabled(true);
 									level3.setEnabled(true);
@@ -419,7 +416,6 @@ public class RoomPanel extends JPanel{
 							
 							@Override
 							public void actionPerformed(ActionEvent e) {
-								// TODO Auto-generated method stub
 								if(group.getSelection().getActionCommand().equals(
 										Integer.toString(myRoomInfo.getLevel()))){
 									level1.setEnabled(false);
@@ -478,7 +474,6 @@ public class RoomPanel extends JPanel{
 					//숫자만 입력받음
 					@Override
 					public void keyTyped(KeyEvent e) {
-						// TODO Auto-generated method stub
 						char c = e.getKeyChar();
 						  
 						  if (!Character.isDigit(c)) {
@@ -489,13 +484,11 @@ public class RoomPanel extends JPanel{
 					
 					@Override
 					public void keyReleased(KeyEvent e) {
-						// TODO Auto-generated method stub
 						
 					}
 					
 					@Override
 					public void keyPressed(KeyEvent e) {
-						// TODO Auto-generated method stub
 						
 					}
 				});
@@ -602,12 +595,18 @@ public class RoomPanel extends JPanel{
 								if(levelThread.isAlive()) {
 									levelFlag = false;
 								}
+								if(exitThread.isAlive()) {
+									exitFlag = false;
+								}
 								myRoomInfo.setAwayId(0);
 								myRoomInfo.setUserCount(1);
 								roomInfoConnection.updateConnection(myRoomInfo);	//awayId를 0으로 업데이트
 								break;
 							//나가는 사람이 host일 경우 중 상대방이 존재할 때 host위임
 							case "BOTH":
+								if(exitThread.isAlive()) {
+									exitFlag = false;
+								}
 								myRoomInfo.setHostId(myRoomInfo.getAwayId());
 								myRoomInfo.setAwayId(0);
 								myRoomInfo.setUserCount(1);
@@ -615,9 +614,7 @@ public class RoomPanel extends JPanel{
 								break;
 							
 							}
-							if(exitThread.isAlive()) {
-								exitFlag = false;
-							}
+							
 							mainFrame.setMyRoomInfo(null);
 							//방 나갈 때 방 클라이언트 소켓 닫기
 							mainFrame.closeClient();
