@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -43,6 +44,10 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 	
 	private void initialize() {
+		
+		//아이콘변경
+		ImageIcon im = new ImageIcon(getClass().getClassLoader().getResource("icon6.png"));
+		setIconImage(im.getImage()); 
 	
 		getContentPane().setLayout(cards);	//카드레이아웃
 		setBackground(Color.WHITE);
