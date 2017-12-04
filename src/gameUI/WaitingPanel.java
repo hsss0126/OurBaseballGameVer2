@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -29,7 +30,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import client.ClientBackground;
 import connection.RoomInfoConnection;
 import connection.UserConnection;
 import dto.RoomInfo;
@@ -68,7 +68,7 @@ public class WaitingPanel extends JPanel {
 				private DefaultListModel<OnlineUserPanel> waitingListModel = new DefaultListModel<>();
 				private JPanel waitingListPanel;
 				private JLabel waitingLabel1;
-				private JLabel waitingLabel2;
+				private JLabel refreshLabel;
 			private JPanel talkingPanel;
 				private JTextArea talkArea;
 				private JPanel talkListPanel;	//대화창(리스트뷰)
@@ -100,38 +100,18 @@ public class WaitingPanel extends JPanel {
 		private List<User> onlineList;
 		private User myInfo;
 		private String onlineUser;
-		
-		private ClientBackground client;
 //------------------------------------------------------------------------------------------------------------
 		
 	public WaitingPanel(MainFrame mf){
-		mainFrame = mf;
-		this.myInfo = mf.getMyInfo();
+		this.mainFrame = mf;
+		myInfo = mf.getMyInfo();
 		initialize();
 	}
 
 	private void initialize() {
 		userConnection = new UserConnection();
 		roomInfoConnection = new RoomInfoConnection();
-		onlineUser = userConnection.listConnection();
-		try {
-			parser = new JSONParser();
-			JSONArray userList =(JSONArray) parser.parse(onlineUser);
-			onlineList = new ArrayList<User>();
-            for(int i=0; i<userList.size(); i++) {
-            	JSONObject obj = (JSONObject) userList.get(i);
-            	System.out.println(obj.toString());
-            	User user = new User();
-            	user.setId(Integer.parseInt((String)obj.get("id")));
-            	user.setNickName((String) obj.get("nickName"));
-            	user.setWin(Integer.parseInt((String)obj.get("win")));
-            	user.setLose(Integer.parseInt((String)obj.get("lose")));
-            	user.setStateName((String) obj.get("stateName"));
-            	onlineList.add(user);
-            }
-		} catch(ParseException e) {
-			e.printStackTrace();
-		}
+		
 		orderIndex = "0";
 		
 		border = new BevelBorder(BevelBorder.RAISED);//3차원적인 테두리 효과를 위한것이고 양각의 옵션을 줌
@@ -161,12 +141,11 @@ public class WaitingPanel extends JPanel {
 		details_1();
 		details_2();
 		
+		initOnlineUserList();
 		initRoomList(orderIndex);
-		
-		client = new ClientBackground();
-		client.connect(0, myInfo.getNickName(), this);
+		//대기실 클라이언트 소켓생성
+		mainFrame.connectClient(0, myInfo.getNickName(), this);
 	}
-	
 	
 	/**
 	 *  내정보 & 방만들기
@@ -248,7 +227,6 @@ public class WaitingPanel extends JPanel {
 						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							// TODO Auto-generated method stub
 							if(orderIndex.equals("0")) {
 								orderIndex = "1";
 							} else {
@@ -271,7 +249,6 @@ public class WaitingPanel extends JPanel {
 						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							// TODO Auto-generated method stub
 							if(orderIndex.equals("2")) {
 								orderIndex = "3";
 							} else {
@@ -294,7 +271,6 @@ public class WaitingPanel extends JPanel {
 						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							// TODO Auto-generated method stub
 							if(orderIndex.equals("4")) {
 								orderIndex = "5";
 							} else {
@@ -317,7 +293,6 @@ public class WaitingPanel extends JPanel {
 						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							// TODO Auto-generated method stub
 							if(orderIndex.equals("6")) {
 								orderIndex = "7";
 							} else {
@@ -348,7 +323,6 @@ public class WaitingPanel extends JPanel {
 				@SuppressWarnings("unchecked")
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					// TODO Auto-generated method stub
 					JList<RoomListPanel> list = (JList<RoomListPanel>) e.getSource();
 					if(e.getClickCount() == 2) {
 						RoomListPanel panel = (RoomListPanel) list.getSelectedValue();
@@ -376,34 +350,19 @@ public class WaitingPanel extends JPanel {
 						} catch(ParseException pe) {
 							pe.printStackTrace();
 						}
+						//방 입장 시 대기실 클라이언트 소켓 닫기
+						mainFrame.closeClient();
+						
 						mainFrame.addRoomPanel(1);
 						mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
+						mainFrame.removePanel(WaitingPanel.this);
 					}
 				}
 
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void mouseExited(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void mousePressed(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
+				@Override public void mouseEntered(MouseEvent e) {}
+				@Override public void mouseExited(MouseEvent e) {}
+				@Override public void mousePressed(MouseEvent e) {}
+				@Override public void mouseReleased(MouseEvent e) {}
 				
 			});
 			roomListPanel.add(new JScrollPane(roomList),"Center");	//대화창패널에 리스트붙이기
@@ -419,9 +378,7 @@ public class WaitingPanel extends JPanel {
 			makeRoomBtn.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					new MakeRoomFrame(mainFrame, myInfo);
-					
+					new MakeRoomFrame(mainFrame, WaitingPanel.this, myInfo);
 				}
 			});
 		roomInfoPanel.add(makeRoomBtn);
@@ -448,12 +405,25 @@ public class WaitingPanel extends JPanel {
 				waitingLabel1.setLocation(13, 15);
 			waitingInfoPanel.add(waitingLabel1);
 			
-			waitingLabel2 = new JLabel("( 접속중 )");
-				waitingLabel2.setBackground(Color.white);
-				waitingLabel2.setFont(font2);
-				waitingLabel2.setSize(100, 30);
-				waitingLabel2.setLocation(90, 15);
-			waitingInfoPanel.add(waitingLabel2);
+			ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("refresh.png"));
+			refreshLabel = new JLabel();
+				refreshLabel.setIcon(icon);
+				refreshLabel.setBackground(Color.white);
+				refreshLabel.setSize(35, 30);
+				refreshLabel.setLocation(200, 15);
+				refreshLabel.addMouseListener(new MouseListener() {
+
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						initOnlineUserList();
+					}
+					@Override public void mouseEntered(MouseEvent e) {}
+					@Override public void mouseExited(MouseEvent e) {}
+					@Override public void mousePressed(MouseEvent e) {}
+					@Override public void mouseReleased(MouseEvent e) {}
+					
+				});
+			waitingInfoPanel.add(refreshLabel);
 			
 			waitingListPanel = new JPanel();
 				waitingListPanel.setBackground(color1);
@@ -462,14 +432,6 @@ public class WaitingPanel extends JPanel {
 				waitingListPanel.setLocation(13, 50);
 				waitingListPanel.setBorder(new TitledBorder(new LineBorder(color6, 3),"")); //테두리설정
 				
-				OnlineUserPanel panel = new OnlineUserPanel(myInfo.getNickName(), myInfo.getStateName());
-				waitingListModel.addElement(panel);
-				for(User user : onlineList) {
-					if(user.getId()!=myInfo.getId()) {
-						panel = new OnlineUserPanel(user.getNickName(), user.getStateName());
-						waitingListModel.addElement(panel);	
-					}
-				}
 				waitingList = new JList<OnlineUserPanel>(waitingListModel);
 					waitingList.setCellRenderer(new OnlineUserRenderer());
 					waitingList.setBackground(color1);
@@ -499,6 +461,15 @@ public class WaitingPanel extends JPanel {
 				talkInput.setFont(font4);
 				talkInput.setSize(460, 40);
 				talkInput.setLocation(5, 225);
+				talkInput.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String msg = talkInput.getText();
+						mainFrame.sendMessage(msg);
+					}
+					
+				});
 			talkingPanel.add(talkInput);
 			
 			talkBtn = new JButton("전송");
@@ -513,7 +484,7 @@ public class WaitingPanel extends JPanel {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						String msg = talkInput.getText();
-						client.sendMessage(msg);
+						mainFrame.sendMessage(msg);
 					}
 				});
 			talkingPanel.add(talkBtn);
@@ -524,6 +495,37 @@ public class WaitingPanel extends JPanel {
 			talkListPanel.add(new JScrollPane(talkArea),"Center");	//대화창패널에 talkArea붙이기
 		two.add(talkingPanel);
 		
+	}
+	public void initOnlineUserList() {
+		onlineUser = userConnection.listConnection();
+		try {
+			parser = new JSONParser();
+			JSONArray userList =(JSONArray) parser.parse(onlineUser);
+			onlineList = new ArrayList<User>();
+            for(int i=0; i<userList.size(); i++) {
+            	JSONObject obj = (JSONObject) userList.get(i);
+            	System.out.println(obj.toString());
+            	User user = new User();
+            	user.setId(Integer.parseInt((String)obj.get("id")));
+            	user.setNickName((String) obj.get("nickName"));
+            	user.setWin(Integer.parseInt((String)obj.get("win")));
+            	user.setLose(Integer.parseInt((String)obj.get("lose")));
+            	user.setStateName((String) obj.get("stateName"));
+            	onlineList.add(user);
+            }
+		} catch(ParseException e) {
+			e.printStackTrace();
+		}
+		
+		waitingListModel.clear();
+		OnlineUserPanel panel = new OnlineUserPanel(myInfo.getNickName(), myInfo.getStateName());
+		waitingListModel.addElement(panel);
+		for(User user : onlineList) {
+			if(user.getId()!=myInfo.getId()) {
+				panel = new OnlineUserPanel(user.getNickName(), user.getStateName());
+				waitingListModel.addElement(panel);	
+			}
+		}
 	}
 	
 	public void initRoomList(String orderIndex){
@@ -552,6 +554,10 @@ public class WaitingPanel extends JPanel {
 			roomListModel.addElement(panel);	
 		}
 		roomList.setModel(roomListModel);
+	}
+	public void chatSetting() {
+		talkArea.setText("대기실에 입장하였습니다.\n");
+		talkInput.setText("");
 	}
 	
 	public void addChatText(String text) {

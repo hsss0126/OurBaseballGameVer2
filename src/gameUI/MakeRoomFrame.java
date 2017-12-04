@@ -1,10 +1,8 @@
 package gameUI;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -18,7 +16,6 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
-
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -39,6 +36,7 @@ public class MakeRoomFrame extends JFrame{
 	private CardLayout cards = new CardLayout();
 	
 	private MainFrame mainFrame;
+	private WaitingPanel waitingPanel;
 	
 	private JPanel roomPanel;
 		private JLabel roomNameLabel;
@@ -60,9 +58,10 @@ public class MakeRoomFrame extends JFrame{
 	private Color color2 = new Color(30,204,208);	//청록
 	private Color color6 = new Color(92,84,82);		//조금 더 진한 연그레이
 	
-	public MakeRoomFrame(MainFrame mf, User myInfo) {
+	public MakeRoomFrame(MainFrame mf, WaitingPanel wp, User myInfo) {
 		this.myInfo = myInfo;
-		mainFrame = mf;
+		this.mainFrame = mf;
+		this.waitingPanel = wp;
 		initialize();
 	}
 	
@@ -181,9 +180,12 @@ public class MakeRoomFrame extends JFrame{
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					//방 입장 시 대기실 클라이언트 소켓 닫기
+					mainFrame.closeClient();
 					//RoomPanel 불러오기
 					mainFrame.addRoomPanel(0);
 					mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
+					mainFrame.removePanel(waitingPanel);
 					dispose(); 
 				}
 			});

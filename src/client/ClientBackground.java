@@ -51,6 +51,14 @@ public class ClientBackground implements Runnable{
 			e.printStackTrace();
 		}
 	}
+	
+	public void closeSocket() {
+		try {
+			out.writeUTF("close/" + roomNo + "/" + nickName );
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void run() {
@@ -62,7 +70,6 @@ public class ClientBackground implements Runnable{
 				} else {
 					roomPanel.addChatText(msg);
 				}
-				
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

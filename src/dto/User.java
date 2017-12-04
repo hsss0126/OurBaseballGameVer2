@@ -6,6 +6,7 @@ public class User {
 	
 	int id;
 	String nickName;
+	int stateId;
 	String stateName;
 	int win;
 	int lose;
@@ -40,6 +41,14 @@ public class User {
 
 	public void setLose(int lose) {
 		this.lose = lose;
+	}
+
+	public int getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(int stateId) {
+		this.stateId = stateId;
 	}
 
 	public String getStateName() {

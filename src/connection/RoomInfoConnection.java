@@ -37,25 +37,21 @@ public class RoomInfoConnection {
 			conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
-			System.out.println("연결 세팅");
 			
 			JSONObject json = new JSONObject();
 			json.put("roomName", arg[0]);
 			json.put("level", arg[1]);
 			json.put("hostId", arg[2]);
-			System.out.println(json.toString());
+			System.out.println("생성할 방 정보"+json.toString());
 			
 			OutputStream out = conn.getOutputStream();
-			System.out.println("아웃풋 연결");
 			out.write(json.toString().getBytes());
 			out.flush();
 			out.close();
-			System.out.println("json전송");
 			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while((result = br.readLine())!=null) {
-					System.out.println(result);
 					return result;
 				}
 			}
@@ -89,7 +85,6 @@ public class RoomInfoConnection {
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			conn.setDoInput(true);
 			conn.setDoOutput(false);
-			System.out.println("연결 세팅");
 			
 			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
@@ -128,20 +123,19 @@ public class RoomInfoConnection {
 			conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
-			System.out.println("연결 세팅");
 			
 			JSONObject json = new JSONObject();
 			json.put("id", roomInfo.getId());
+			json.put("hostId", roomInfo.getHostId());
 			json.put("awayId", roomInfo.getAwayId());
 			json.put("userCount", roomInfo.getUserCount());
-			System.out.println(json.toString());
+			json.put("level", roomInfo.getLevel()!=0 ? roomInfo.getLevel() : 0);
+			System.out.println("업데이트 할 방 정보"+json.toString());
 			
 			OutputStream out = conn.getOutputStream();
-			System.out.println("아웃풋 연결");
 			out.write(json.toString().getBytes());
 			out.flush();
 			out.close();
-			System.out.println("json전송");
 			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -161,7 +155,7 @@ public class RoomInfoConnection {
 	/**
 	 * id로 방 정보 받아오는 메소드(방 정보 최신화)
 	 * @param id
-	 * @return 조회된 방 정보
+	 * @return x
 	 */
 	public String findByIdConnection(String ...arg) {
 		URL url;
@@ -180,13 +174,87 @@ public class RoomInfoConnection {
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			conn.setDoInput(true);
 			conn.setDoOutput(false);
-			System.out.println("연결 세팅");
 			
 			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while((result = br.readLine())!=null) {
-					System.out.println(result);
+					return result;
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		result = Integer.toString(ResponseCode.connect_error);
+		return result; 	
+	}
+	
+	/**
+	 * id로 방 삭제하는 메소드(방장 나갈 시 삭제)
+	 * @param id
+	 * @return 조회된 방 정보
+	 */
+	public String deleteConnection(String ...arg) {
+		URL url;
+		HttpURLConnection conn = null;
+		String result;
+		try {
+			String id = URLEncoder.encode(arg[0], "UTF-8");
+			url = new URL(URLs.url+"roomInfo/delete?id="+id);
+			conn = (HttpURLConnection) url.openConnection();
+			
+			conn.setReadTimeout(10000);
+			conn.setConnectTimeout(10000);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Cache-Control", "no-cache");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setDoInput(true);
+			conn.setDoOutput(false);
+			
+			System.out.println(conn.getResponseCode());
+			if(conn.getResponseCode() == 200) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				while((result = br.readLine())!=null) {
+					return result;
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		result = Integer.toString(ResponseCode.connect_error);
+		return result; 	
+	}
+	
+	/**
+	 * id로 방 삭제하는 메소드(방장 나갈 시 삭제)
+	 * @param id
+	 * @return 조회된 방 정보
+	 */
+	public String deleteByHostIdConnection(String ...arg) {
+		URL url;
+		HttpURLConnection conn = null;
+		String result;
+		try {
+			String id = URLEncoder.encode(arg[0], "UTF-8");
+			url = new URL(URLs.url+"roomInfo/deleteByHostId?id="+id);
+			conn = (HttpURLConnection) url.openConnection();
+			
+			conn.setReadTimeout(10000);
+			conn.setConnectTimeout(10000);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Cache-Control", "no-cache");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setDoInput(true);
+			conn.setDoOutput(false);
+			
+			System.out.println(conn.getResponseCode());
+			if(conn.getResponseCode() == 200) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				while((result = br.readLine())!=null) {
 					return result;
 				}
 			}
