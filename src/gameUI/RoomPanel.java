@@ -32,8 +32,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import connection.GameInfoConnection;
 import connection.RoomInfoConnection;
 import connection.UserConnection;
+import dto.GameInfo;
 import dto.RoomInfo;
 import dto.User;
 
@@ -46,6 +48,7 @@ public class RoomPanel extends JPanel{
 	private MainFrame mainFrame;
 	private User myInfo;
 	private RoomInfo myRoomInfo;
+	private GameInfo myGameInfo;
 	
 	//방주인,상대방 프로필 & 방 정보
 		private JPanel onePanel;
@@ -102,21 +105,23 @@ public class RoomPanel extends JPanel{
 		private JSONParser parser;
 		private UserConnection userConnection;
 		private RoomInfoConnection roomInfoConnection;
+		private GameInfoConnection gameInfoConnection;
+		
 		private User enemyInfo;
-		private String enemyResult;
 		private int caseIndex;
+		private Boolean rockFlag;
 		
 		private HostThread hostThread;
 		private LevelThread levelThread;
 		private ExitThread exitThread;
+		private ReadyThread readyThread;
 		private Boolean hostFlag;
 		private Boolean levelFlag;
 		private Boolean exitFlag;
+		private Boolean readyFlag;
 	
 	public RoomPanel(MainFrame mf, int index) {
 		this.mainFrame = mf;
-		userConnection = new UserConnection();
-		roomInfoConnection = new RoomInfoConnection();
 		parser = new JSONParser();
 		initialize(index);
 	}
@@ -125,7 +130,6 @@ public class RoomPanel extends JPanel{
 		setLayout(new GridLayout(2,1));
 		setBackground(Color.WHITE);
 		setSize(800,600);
-		//setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
 		Dimension frameSize = this.getSize();	//프레임크기
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();	//모니터크기
@@ -133,6 +137,13 @@ public class RoomPanel extends JPanel{
 		
 		myInfo = mainFrame.getMyInfo();
 		myRoomInfo = mainFrame.getMyRoomInfo();
+		
+		userConnection = mainFrame.getUserConnection();
+		roomInfoConnection = mainFrame.getRoomInfoConnection();
+		gameInfoConnection = mainFrame.getGameInfoConnection();
+		
+		myGameInfo = mainFrame.gameInfoParse(gameInfoConnection.findByRoomIdConnection(myRoomInfo.getId()));
+		mainFrame.setMyGameInfo(myGameInfo);
 		
 		border = new BevelBorder(BevelBorder.RAISED);//3차원적인 테두리 효과를 위한것이고 양각의 옵션을 줌
 		
@@ -475,11 +486,12 @@ public class RoomPanel extends JPanel{
 					@Override
 					public void keyTyped(KeyEvent e) {
 						char c = e.getKeyChar();
-						  
-						  if (!Character.isDigit(c)) {
-						   e.consume();
-						   return;
-						  }
+						
+						if (!Character.isDigit(c)) {
+							System.out.println(c+"입력제거");
+							e.consume();
+							return;
+						}
 					}
 					
 					@Override
@@ -506,67 +518,98 @@ public class RoomPanel extends JPanel{
 			
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						
+						String number;
 						switch(initCase[caseIndex]) {
 						case "HOST":
 							JOptionPane.showMessageDialog(mainFrame, "아직 상대방이 입장하지 않았습니다!", "확인 메세지", JOptionPane.WARNING_MESSAGE);
 							break;
+						//방 레벨에 맞는 숫자(중복확인해야함)를 입력 후 방의 gameInfo에 저장(setting)
 						case "AWAY":
-							
+							//준비 상태일 때 해제하기 (나가기 불가 해제 / 숫자 변경 불가 해제)
+							if(rockFlag) {
+								myGameInfo = mainFrame.gameInfoParse(gameInfoConnection.gameEndConnection(myGameInfo.getId()));
+								rockFlag = false;
+								numInputText.setEnabled(true);
+								userStateText.setVisible(false);
+								exitBtn.setEnabled(true);
+							} 
+							//준비 하기 (숫자 입력, 나가기 불가, 숫자변경 불가)
+							else {
+								number = numInputText.getText();
+								System.out.println("입력 숫자:"+number);
+								//아무 숫자도 입력하지 않았다면
+								if(number.isEmpty()) {
+									JOptionPane.showMessageDialog(mainFrame, "숫자를 입력해주세요", "경고", JOptionPane.WARNING_MESSAGE);
+								}
+								//레벨과 숫자길이가 같지 않다면
+								else if(number.length() != myRoomInfo.getLevel()) {
+									JOptionPane.showMessageDialog(mainFrame, myRoomInfo.getLevel()+"자리 숫자를 입력해주세요", "경고", JOptionPane.WARNING_MESSAGE);
+								}
+								//레벨과 숫자길이가 일치한다면
+								else if(number.length() == myRoomInfo.getLevel()) {
+									//숫자 중복확인(true시 중복 x)
+									if(checkInputNum(number)) {
+										//gameInfo에 저장
+										myGameInfo.setAwayNumber(number);
+										myGameInfo = mainFrame.gameInfoParse(gameInfoConnection.settingConnection(myGameInfo));
+										mainFrame.setMyGameInfo(myGameInfo);
+										
+										rockFlag = true;
+										numInputText.setEnabled(false);
+										userStateText.setVisible(true);
+										exitBtn.setEnabled(false);
+									} 
+									//입력한 숫자가 중복이라면
+									else {
+										JOptionPane.showMessageDialog(mainFrame, "중복되지 않는 숫자를 입력해주세요", "경고", JOptionPane.WARNING_MESSAGE);
+									}
+								}
+							}
 							break;
+						//away의 준비여부를 확인 후 방 레벨에 맞는 숫자 입력 후 game시작(setting&update)
 						case "BOTH":
+							number = numInputText.getText();
+							System.out.println("입력 숫자:"+number);
+							//아무 숫자도 입력하지 않았다면
+							if(number.isEmpty()) {
+								JOptionPane.showMessageDialog(mainFrame, "숫자를 입력해주세요", "경고", JOptionPane.WARNING_MESSAGE);
+							}
+							//레벨과 숫자길이가 같지 않다면
+							else if(number.length() != myRoomInfo.getLevel()) {
+								JOptionPane.showMessageDialog(mainFrame, myRoomInfo.getLevel()+"자리 숫자를 입력해주세요", "경고", JOptionPane.WARNING_MESSAGE);
+							}
+							//레벨과 숫자길이가 일치한다면
+							else if(number.length() == myRoomInfo.getLevel()) {
+								//숫자 중복확인(true시 중복 x)
+								if(checkInputNum(number)) {
+									//상대가 준비상태라면
+									if(enemyStateText.isVisible()) {
+										//gameInfo에 저장 후 게임 시작
+										myGameInfo.setHostNumber(number);
+										myGameInfo = mainFrame.gameInfoParse(gameInfoConnection.settingConnection(myGameInfo));
+										mainFrame.setMyGameInfo(myGameInfo);
+										
+										if(exitThread.isAlive()) exitFlag = false;
+										if(readyThread.isAlive()) readyFlag = false;
+										
+										mainFrame.closeClient();
+										mainFrame.addGamePanel();
+										mainFrame.getCardLayout().show(mainFrame.getContentPane(), "GamePanel");	//대기실로 나가~
+										mainFrame.removePanel(RoomPanel.this);
+									}
+									//상대가 준비상태가 아니라면
+									else {
+										JOptionPane.showMessageDialog(mainFrame, "상대방이 아직 숫자를 입력하지 않았습니다.\n", "경고", JOptionPane.WARNING_MESSAGE);
+									}
+								} 
+								//입력한 숫자가 중복이라면
+								else {
+									JOptionPane.showMessageDialog(mainFrame, "중복되지 않는 숫자를 입력해주세요", "경고", JOptionPane.WARNING_MESSAGE);
+								}
+							}
 							break;
 						}
-						//난이도가 3자리 수 일 경우
-						if(level1.isSelected()) {
-							if(numInputText.getText().length() >=3) {
-								if(readyBtn.getText().toString() == " E D I T ") {
-									userStateText.setVisible(false);
-									readyBtn.setText(" R E A D Y ");
-									numInputText.setEnabled(true);
-								}else {
-									userStateText.setVisible(true);
-									numInputText.setEnabled(false);
-									readyBtn.setText(" E D I T ");
-								}
-							}else {
-								
-							}
-						}
 						
-						//난이도가 4자리 수 일 경우
-						if(level2.isSelected()) {
-							if(numInputText.getText().length() >=4) {
-								if(readyBtn.getText().toString() == " E D I T ") {
-									userStateText.setVisible(false);
-									readyBtn.setText(" R E A D Y ");
-									numInputText.setEnabled(true);
-								}else {
-									userStateText.setVisible(true);
-									numInputText.setEnabled(false);
-									readyBtn.setText(" E D I T ");
-								}
-							}else {
-								JOptionPane.showMessageDialog(mainFrame, "자릿수에 맞게 숫자를 입력헤주세요!", "확인 메세지", JOptionPane.WARNING_MESSAGE);
-							}
-						}
-						
-						//난이도가 5자리 수 일 경우
-						if(level3.isSelected()) {
-							if(numInputText.getText().length() >=5) {
-								if(readyBtn.getText().toString() == " E D I T ") {
-									userStateText.setVisible(false);
-									readyBtn.setText(" R E A D Y ");
-									numInputText.setEnabled(true);
-								}else {
-									userStateText.setVisible(true);
-									numInputText.setEnabled(false);
-									readyBtn.setText(" E D I T ");
-								}
-							}else {
-								JOptionPane.showMessageDialog(mainFrame, "자릿수에 맞게 숫자를 입력헤주세요!", "확인 메세지", JOptionPane.WARNING_MESSAGE);
-							}
-						}
 					}
 				});
 			controlPanel.add(readyBtn);
@@ -585,28 +628,24 @@ public class RoomPanel extends JPanel{
 							switch(initCase[caseIndex]) {
 							//나가는 사람이 host일 경우 중 상대방이 없을 때 방 삭제
 							case "HOST":
-								if(hostThread.isAlive()) {
-									hostFlag = false;
-								}
-								roomInfoConnection.deleteConnection(Integer.toString(myRoomInfo.getId()));
+								if(hostThread.isAlive()) hostFlag = false;
+								
+								roomInfoConnection.deleteConnection(myRoomInfo.getId());
 								break;
 							//나가는 사람이 away일 경우 그냥 나가기
 							case "AWAY":
-								if(levelThread.isAlive()) {
-									levelFlag = false;
-								}
-								if(exitThread.isAlive()) {
-									exitFlag = false;
-								}
+								if(levelThread.isAlive()) levelFlag = false;
+								if(exitThread.isAlive()) exitFlag = false;
+								
 								myRoomInfo.setAwayId(0);
 								myRoomInfo.setUserCount(1);
 								roomInfoConnection.updateConnection(myRoomInfo);	//awayId를 0으로 업데이트
 								break;
 							//나가는 사람이 host일 경우 중 상대방이 존재할 때 host위임
 							case "BOTH":
-								if(exitThread.isAlive()) {
-									exitFlag = false;
-								}
+								if(exitThread.isAlive()) exitFlag = false;
+								if(readyThread.isAlive()) readyFlag = false;
+								
 								myRoomInfo.setHostId(myRoomInfo.getAwayId());
 								myRoomInfo.setAwayId(0);
 								myRoomInfo.setUserCount(1);
@@ -628,7 +667,7 @@ public class RoomPanel extends JPanel{
 		onePanel.add(controlPanel);
 
 		//"HOST","AWAY","BOTH"조건에 맞게 초기화
-		caseByInit(index);
+		initByCase(index);
 		initLevel();
 	}
 	
@@ -712,34 +751,20 @@ public class RoomPanel extends JPanel{
 	
 	
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	public void caseByInit(int index) {
+	public void initByCase(int index) {
 		this.caseIndex = index;
+		rockFlag = false;
 		System.out.println("당신은 "+initCase[caseIndex]+"입니다.");
 		myRoomInfo = mainFrame.getMyRoomInfo();
 		//HOST가 아닌 경우에만 (HOST일 땐 상대방이 없음)
 		if(!initCase[caseIndex].equals("HOST")) {
 			//BOTH인 경유에 away정보를 받아옴
 			if(initCase[caseIndex].equals("BOTH")) {
-				System.out.println(myInfo.getId() +" : "+myRoomInfo.getHostId() +" : " + myRoomInfo.getAwayId());
-				enemyResult = userConnection.findByIdConnection(Integer.toString(myRoomInfo.getAwayId()));
+				enemyInfo = mainFrame.userParse(userConnection.findByIdConnection(myRoomInfo.getAwayId()));
 			}
 			//AWAY인 경우에 host정보를 받아옴
 			else if(initCase[caseIndex].equals("AWAY")){
-				System.out.println(myInfo.getId() +" : "+myRoomInfo.getAwayId());
-				enemyResult = userConnection.findByIdConnection(Integer.toString(myRoomInfo.getHostId()));
-			}
-			System.out.println("RoomPanel결과값"+enemyResult);
-			try {
-				JSONObject json = (JSONObject) parser.parse(enemyResult);
-				enemyInfo = new User();
-				enemyInfo.setId(Integer.parseInt((String)json.get("id")));
-				enemyInfo.setNickName((String)json.get("nickName"));
-				enemyInfo.setWin(Integer.parseInt((String)json.get("win")));
-				enemyInfo.setLose(Integer.parseInt((String)json.get("lose")));
-				enemyInfo.setStateName((String) json.get("stateName"));
-				System.out.println(enemyInfo.toString());
-			} catch (ParseException e) {
-				e.printStackTrace();
+				enemyInfo = mainFrame.userParse(userConnection.findByIdConnection(myRoomInfo.getHostId()));
 			}
 		}
 				
@@ -774,11 +799,27 @@ public class RoomPanel extends JPanel{
 			levelThread.start();
 			exitThread = new ExitThread();
 			exitThread.start();
+			readyThread = new ReadyThread();
+			readyThread.start();
 		}
 		if(initCase[caseIndex].equals("BOTH")) {
 			exitThread = new ExitThread();
 			exitThread.start();
+			readyThread = new ReadyThread();
+			readyThread.start();
 		}
+	}
+	
+	public boolean checkInputNum(String number) {
+		for(int i=0; i<number.length(); i++) {
+			char ch = number.charAt(i);
+			for(int j=i+1; j<number.length(); j++) {
+				if(ch == number.charAt(j)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
 	//JTextField에서 글자수 입력제한하기
@@ -813,25 +854,22 @@ public class RoomPanel extends JPanel{
 	 * 방장이 상대방 접속을 기다리는 스레드
 	 */
 	class HostThread extends Thread{
-		
+		private RoomInfo roomInfo;
 		@Override
 		public void run() {
 			hostFlag = true;
 			while(hostFlag) {
-				String result = roomInfoConnection.findByIdConnection(Integer.toString(myRoomInfo.getId()));
-				System.out.println(result);
 				try {
-					JSONObject json = (JSONObject) parser.parse(result);
-					if(json.get("awayName") != null) {
-						myRoomInfo.setAwayId(Integer.parseInt((String)json.get("awayId")));
-						myRoomInfo.setAwayName((String)json.get("awayName"));
-						mainFrame.setMyRoomInfo(myRoomInfo);
-						joinRoomChat(myRoomInfo.getAwayName());
-						RoomPanel.this.caseIndex = 2;
-						caseByInit(2);
-						hostFlag = false;
+					roomInfo = mainFrame.roomInfoParse(roomInfoConnection.findByIdConnection(myRoomInfo.getId()));
+					if(roomInfo != null) {
+						if(roomInfo.getUserCount() == 2) {
+							mainFrame.setMyRoomInfo(roomInfo);
+							joinRoomChat(roomInfo.getAwayName());
+							initByCase(2);
+							hostFlag = false;
+						}
 					}
-					Thread.sleep(1000);
+					Thread.sleep(100);
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -844,24 +882,23 @@ public class RoomPanel extends JPanel{
 	 * 방의 레벨 변경을 기다리는 스레드
 	 */
 	class LevelThread extends Thread {
-		
+		private RoomInfo roomInfo;
 		@Override
 		public void run() {
 			levelFlag = true;
 			while(levelFlag) {
-				String result = roomInfoConnection.findByIdConnection(Integer.toString(myRoomInfo.getId()));
-				System.out.println("레벨 조회 "+ result);
 				try {
-					JSONObject json = (JSONObject) parser.parse(result);
-					if(!Integer.toString(myRoomInfo.getLevel()).equals((String) json.get("level"))) {
-						myRoomInfo.setLevel(Integer.parseInt((String)json.get("level")));
-						mainFrame.setMyRoomInfo(myRoomInfo);
-						initLevel();
-						
-						JOptionPane.showMessageDialog(mainFrame, "게임 설정이 변경되었습니다.\n 숫자를 다시 설정해주세요.", "확인 메세지", JOptionPane.INFORMATION_MESSAGE);
-						//레벨변경했다고 알림창 띄우기
+					roomInfo = mainFrame.roomInfoParse(roomInfoConnection.findByIdConnection(myRoomInfo.getId()));
+					if(roomInfo != null) {
+						if(myRoomInfo.getLevel() != roomInfo.getLevel()) {
+							mainFrame.setMyRoomInfo(roomInfo);
+							initLevel();
+							
+							JOptionPane.showMessageDialog(mainFrame, "게임 설정이 변경되었습니다.\n 숫자를 다시 설정해주세요.", "확인 메세지", JOptionPane.INFORMATION_MESSAGE);
+							//레벨변경했다고 알림창 띄우기
+						}
 					}
-					Thread.sleep(1000);
+					Thread.sleep(100);
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -869,46 +906,40 @@ public class RoomPanel extends JPanel{
 		}
 	}
 	
+	/*
+	 * 상대방이 나갔는지 확인하는 스레드
+	 */
 	class ExitThread extends Thread {
+		private RoomInfo roomInfo;
 		@Override
 		public void run() {
 			exitFlag = true;
 			while(exitFlag) {
-				String exitResult = roomInfoConnection.findByIdConnection(Integer.toString(myRoomInfo.getId()));
 				try {
-					JSONObject json = (JSONObject) parser.parse(exitResult);
-					//HOST 입장에서 상대방이 나갔는지 확인
-					if(initCase[RoomPanel.this.caseIndex].equals("BOTH")) {
-						if(json.get("awayId").equals("0")) {
-							myRoomInfo.setAwayId(Integer.parseInt((String) json.get("awayId")));
-							myRoomInfo.setAwayName((String) json.get("awayName"));
-							myRoomInfo.setUserCount(Integer.parseInt((String) json.get("userCount")));
-							mainFrame.setMyRoomInfo(myRoomInfo);
-							caseByInit(0);
-							exitFlag = false;
-						} else {
-							System.out.println(myInfo.getNickName()+"상대 away 있음");
-						}
-					} 
-					//AWAY 입장에서 상대방이 나갔는지 확인
-					else if(initCase[RoomPanel.this.caseIndex].equals("AWAY")) {
-						//새로 조회한 방의 hostId 정보가 나의 id와 같을 경우 host가 나간 것 이므로 새로 초기화
-						if(json.get("hostId").equals(Integer.toString(myInfo.getId()))) {
-							myRoomInfo.setHostId(Integer.parseInt((String) json.get("hostId")));
-							myRoomInfo.setHostName((String) json.get("hostName"));
-							myRoomInfo.setAwayId(Integer.parseInt((String) json.get("awayId")));
-							myRoomInfo.setAwayName((String) json.get("awayName"));
-							myRoomInfo.setUserCount(Integer.parseInt((String) json.get("userCount")));
-							mainFrame.setMyRoomInfo(myRoomInfo);
-							caseByInit(0);
-							levelFlag = false;
-							exitFlag = false;
-							JOptionPane.showMessageDialog(mainFrame, "방장이 되었습니다.", "확인 메세지", JOptionPane.INFORMATION_MESSAGE);
-						} else {
-							System.out.println(myInfo.getNickName()+"상대 host 있음");
+					roomInfo = mainFrame.roomInfoParse(roomInfoConnection.findByIdConnection(myRoomInfo.getId()));
+					if(roomInfo != null) {
+						//HOST 입장에서 상대방이 나갔는지 확인
+						if(initCase[RoomPanel.this.caseIndex].equals("BOTH")) {
+							if(roomInfo.getAwayId() == 0) {
+								exitFlag = false;
+								readyFlag = false;
+								mainFrame.setMyRoomInfo(roomInfo);
+								initByCase(0);
+	 						}
+						} 
+						//AWAY 입장에서 상대방이 나갔는지 확인
+						else if(initCase[RoomPanel.this.caseIndex].equals("AWAY")) {
+							//새로 조회한 방의 hostId 정보가 나의 id와 같을 경우 host가 나간 것 이므로 새로 초기화
+							if(roomInfo.getHostId() == myInfo.getId()) {
+								levelFlag = false;
+								exitFlag = false;
+								mainFrame.setMyRoomInfo(roomInfo);
+								initByCase(0);
+								JOptionPane.showMessageDialog(mainFrame, "방장이 되었습니다.", "확인 메세지", JOptionPane.INFORMATION_MESSAGE);
+							}
 						}
 					}
-					Thread.sleep(1000);
+					Thread.sleep(100);
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -916,4 +947,55 @@ public class RoomPanel extends JPanel{
 		}
 	}
 	
+	/*
+	 * BOTH입장에서 상대방이 준비상태인지 확인하는 스레드
+	 * AWAY입장에서 게임 시작했는지 확인하는 스레드
+	 */
+	class ReadyThread extends Thread {
+		GameInfo gameInfo;
+		@Override
+		public void run() {
+			readyFlag = true;
+			while(readyFlag) {
+				try {
+					gameInfo = mainFrame.gameInfoParse(gameInfoConnection.findByIdConnection(myGameInfo.getId()));
+					if(gameInfo != null) {
+						if(initCase[RoomPanel.this.caseIndex].equals("BOTH")) {
+							//away가 준비상태라면
+							if(gameInfo.getAwayNumber() != null) {
+								if(!enemyStateText.isVisible()) {
+									enemyStateText.setVisible(true);
+								}
+							} 
+							//away가 준비상태가 아니라면
+							else {
+								if(enemyStateText.isVisible()) {
+									enemyStateText.setVisible(false);
+								}
+							}
+						}
+						else if(initCase[RoomPanel.this.caseIndex].equals("AWAY")) {
+							//host가 숫자를 입력했다면 게임 시작
+							if(gameInfo.getHostNumber() != null) {
+								enemyStateText.setVisible(true);
+								if(exitThread.isAlive()) exitFlag = false;
+								if(levelThread.isAlive()) levelFlag = false;
+								readyFlag = false;
+								
+								mainFrame.closeClient();
+								mainFrame.addGamePanel();
+								mainFrame.getCardLayout().show(mainFrame.getContentPane(), "GamePanel");	//게임화면으로
+								mainFrame.removePanel(RoomPanel.this);
+							}
+						}
+						mainFrame.setMyGameInfo(gameInfo);
+						myGameInfo = mainFrame.getMyGameInfo();
+					}
+					Thread.sleep(100);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }

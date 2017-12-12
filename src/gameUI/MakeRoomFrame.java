@@ -20,15 +20,11 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import connection.RoomInfoConnection;
 import dto.RoomInfo;
 import dto.User;
 
-public class MakeRoomFrame extends JFrame{
+public class MakeRoomFrame extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -44,13 +40,11 @@ public class MakeRoomFrame extends JFrame{
 		private JPanel levelPanel;
 		private ButtonGroup group;
 		private JRadioButton level1, level2, level3;
-		static JButton okBtn, closeBtn;
+		private JButton okBtn, closeBtn;
 		
-	private JSONParser parser;
 	private RoomInfoConnection roomInfoConnection;
 	private String roomName;
 	private int level;
-	private String result;
 		
 	private Font font1 = new Font("맑은 고딕",Font.BOLD,15);
 	private Font font2 = new Font("맑은 고딕",Font.BOLD,20);
@@ -73,6 +67,7 @@ public class MakeRoomFrame extends JFrame{
 		setSize(345,265);
 		setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
+		setAlwaysOnTop(true);
 		double width = this.getSize().getWidth()/2;		//프레임크기
 		double height = this.getSize().getHeight()/2;		//프레임크기
 		double x = mainFrame.getLocation().getX();	//모니터크기
@@ -148,47 +143,8 @@ public class MakeRoomFrame extends JFrame{
 			okBtn.setSize(130, 40);
 			okBtn.setLocation(40, 210);
 			okBtn.setBorder(new MatteBorder(3,3,3,3, color6));
-			
-			okBtn.addActionListener(new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					
-					roomName = roomNameText.getText();		//입력된 방 이름
-					if(level1.isSelected()) {
-						level = 3;
-					}else if(level2.isSelected()) {
-						level = 4;
-					}else {
-						level = 5;
-					}
-					result = roomInfoConnection.createConnection(roomName, Integer.toString(level), Integer.toString(myInfo.getId()));
-					System.out.println(result);
-					try {
-						parser = new JSONParser();
-						JSONObject json = (JSONObject) parser.parse(result);
-						RoomInfo roomInfo = new RoomInfo();
-						roomInfo.setId(Integer.parseInt((String)json.get("id")));
-						roomInfo.setRoomName((String)json.get("roomName"));
-						roomInfo.setHostId(Integer.parseInt((String)json.get("hostId")));
-						roomInfo.setHostName((String)json.get("hostName"));
-						roomInfo.setLevel(Integer.parseInt((String)json.get("level")));
-						roomInfo.setUserCount(Integer.parseInt((String)json.get("userCount")));
-						mainFrame.setMyRoomInfo(roomInfo);
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					//방 입장 시 대기실 클라이언트 소켓 닫기
-					mainFrame.closeClient();
-					//RoomPanel 불러오기
-					mainFrame.addRoomPanel(0);
-					mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
-					mainFrame.removePanel(waitingPanel);
-					dispose(); 
-				}
-			});
+			okBtn.setActionCommand("make");
+			okBtn.addActionListener(this);
 		roomPanel.add(okBtn);
 		
 		closeBtn = new JButton("취 소");
@@ -197,14 +153,8 @@ public class MakeRoomFrame extends JFrame{
 			closeBtn.setSize(130, 40);
 			closeBtn.setLocation(180, 210);
 			closeBtn.setBorder(new MatteBorder(3,3,3,3, color6));
-			
-			closeBtn.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-						dispose();
-					}
-				});
+			closeBtn.setActionCommand("cancel");
+			closeBtn.addActionListener(this);
 		roomPanel.add(closeBtn);
 	}
 	
@@ -212,9 +162,45 @@ public class MakeRoomFrame extends JFrame{
 		 return cards;
 	}
 	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		String command = e.getActionCommand();
+		switch(command) {
+		case "make":
+			roomName = roomNameText.getText();		//입력된 방 이름
+			if(level1.isSelected()) {
+				level = 3;
+			}else if(level2.isSelected()) {
+				level = 4;
+			}else {
+				level = 5;
+			}
+			RoomInfo roomInfo = new RoomInfo();
+			roomInfo.setRoomName(roomName);
+			roomInfo.setLevel(level);
+			roomInfo.setHostId(myInfo.getId());
+			
+			roomInfo = mainFrame.roomInfoParse(roomInfoConnection.createConnection(roomInfo));
+			mainFrame.setMyRoomInfo(roomInfo);
+			//방 입장 시 대기실 클라이언트 소켓 닫기
+			mainFrame.closeClient();
+			//RoomPanel 불러오기
+			mainFrame.addRoomPanel(0);
+			mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");
+			mainFrame.removePanel(waitingPanel);
+			dispose(); 
+			break;
+		case "cancel":
+			dispose();
+			break;
+		}
+	}
+	
 	//JTextField에서 글자수 입력제한하기
 	 class JTextFieldLimit extends PlainDocument {
-	   private int limit;
+		private static final long serialVersionUID = 1L;
+		private int limit;
 	   private boolean toUppercase = false;
 	    JTextFieldLimit(int limit) {
 	      super();
@@ -238,5 +224,7 @@ public class MakeRoomFrame extends JFrame{
 	      }
 	   }
 	}
+
+	
 	 
 }

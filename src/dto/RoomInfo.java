@@ -2,14 +2,14 @@ package dto;
 
 public class RoomInfo {
 
-	int id;
-	String roomName;
-	int hostId;
-	String hostName;
-	int awayId;
-	String awayName;
-	int level;
-	int userCount;
+	private int id;
+	private String roomName;
+	private int hostId;
+	private String hostName;
+	private int awayId;
+	private String awayName;
+	private int level;
+	private int userCount;
 
 	public int getId() {
 		return id;

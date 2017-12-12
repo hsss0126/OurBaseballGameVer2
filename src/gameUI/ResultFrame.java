@@ -1,16 +1,7 @@
 package gameUI;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -19,14 +10,29 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.MatteBorder;
 
-public class ResultFrame extends JFrame{
+import connection.RoomInfoConnection;
+import connection.UserConnection;
+import dto.GameInfo;
+import dto.RoomInfo;
+import dto.User;
+
+public class ResultFrame extends JFrame implements Runnable{
 	
 	private static final long serialVersionUID = 1L;
 
+	private String[] initCase = {"HOST", "AWAY"};
+	private int initIndex;
+	private String[] resultCase = {"WIN", "LOSE"};
+	private int resultIndex;
+	
 	private MainFrame mainFrame;
+	private GamePanel gamePanel;
+	
+	private User myInfo;
+	private RoomInfo myRoomInfo;
+	private GameInfo myGameInfo;
 	
 	private JPanel mainPanel;
 	
@@ -37,8 +43,8 @@ public class ResultFrame extends JFrame{
 		private JLabel recordLabel;		//전적
 		private JLabel recordText;
 		
-		private JLabel awayNumLabel;	//상대방 숫자
-		private JLabel awayNumText;
+		private JLabel enemyNumLabel;	//상대방 숫자
+		private JLabel enemyNumText;
 
 		private JButton backBtn;		//방으로 돌아가기
 		private JButton exitBtn;		//대기실로 나가기
@@ -52,9 +58,21 @@ public class ResultFrame extends JFrame{
 	private Color color5 = new Color(217,211,210);	//연그레이
 	private Color color6 = new Color(92,84,82);		//조금 더 진한 연그레이
 	
-	public ResultFrame(MainFrame mf) {
-		mainFrame = mf;
-		initialize();
+	private UserConnection userConnection;
+	private RoomInfoConnection roomInfoConnection;
+	private String enemyNumber;
+	
+	public ResultFrame(MainFrame mf, GamePanel gp, int initIndex, int resultIndex) {
+		this.initIndex = initIndex;
+		this.resultIndex = resultIndex;
+		this.mainFrame = mf;
+		this.gamePanel = gp;
+		myInfo = mainFrame.getMyInfo();
+		myRoomInfo = mainFrame.getMyRoomInfo();
+		myGameInfo = mainFrame.getMyGameInfo();
+		userConnection = mainFrame.getUserConnection();
+		roomInfoConnection = mainFrame.getRoomInfoConnection();
+		
 	}
 	
 	private void initialize() {
@@ -63,6 +81,7 @@ public class ResultFrame extends JFrame{
 		setSize(400,500);
 		setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
+		setAlwaysOnTop(true);
 		double width = this.getSize().getWidth()/2;		//프레임크기
 		double height = this.getSize().getHeight()/2;		//프레임크기
 		double x = mainFrame.getLocation().getX();	//모니터크기
@@ -124,8 +143,28 @@ public class ResultFrame extends JFrame{
 			backBtn.addActionListener(new ActionListener() {
 					@Override
 		 			public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
+						//방의 정보를 다시 받아온 후
+						myRoomInfo = mainFrame.roomInfoParse(roomInfoConnection.findByIdConnection(myRoomInfo.getId()));
+						if(initCase[initIndex].equals("HOST")) {
+							if(myRoomInfo.getAwayId() == 0) {
+								mainFrame.addRoomPanel(0);
+							}
+							else {
+								mainFrame.addRoomPanel(2);
+							}
+						}
+						else if(initCase[initIndex].equals("AWAY")) {
+							if(myRoomInfo.getAwayId() == 0) {
+								mainFrame.addRoomPanel(0);
+							}
+							else {
+								mainFrame.addRoomPanel(1);
+							}
+						}
+						
+						mainFrame.setMyRoomInfo(myRoomInfo);
 						mainFrame.getCardLayout().show(mainFrame.getContentPane(), "RoomPanel");	//시작버튼클릭시 게임화면으로 전환
+						mainFrame.remove(gamePanel);
 		 				dispose();
 		 			}
 		 		});
@@ -142,23 +181,67 @@ public class ResultFrame extends JFrame{
 			exitBtn.addActionListener(new ActionListener() {
 					@Override
 		 			public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-						mainFrame.getCardLayout().show(mainFrame.getContentPane(), "WaitingPanel");	//시작버튼클릭시 게임화면으로 전환
+						//방의 정보를 다시 받아온 후
+						myRoomInfo = mainFrame.roomInfoParse(roomInfoConnection.findByIdConnection(myRoomInfo.getId()));
+						//host일 경우
+						if(initCase[initIndex].equals("HOST")) {
+							//먼저 away가 나갔다면
+							if(myRoomInfo.getAwayId() == 0) {
+								//방을 삭제
+								roomInfoConnection.deleteConnection(myRoomInfo.getId());
+							} 
+							//아직 나가지 않았다면
+							else {
+								myRoomInfo.setHostId(myRoomInfo.getAwayId());
+								myRoomInfo.setAwayId(0);
+								myRoomInfo.setUserCount(1);
+								roomInfoConnection.updateConnection(myRoomInfo);	//hostId를 awayId로 수정 후 awayId를 0으로 업데이트
+							}
+						} 
+						//away일 경우
+						else if(initCase[initIndex].equals("AWAY")) {
+							//먼저 host가 나갔다면
+							if(myRoomInfo.getAwayId() == 0) {
+								//방을 삭제
+								roomInfoConnection.deleteConnection(myRoomInfo.getId());
+							}
+							//아직 나가지 않았다면
+							else {
+								myRoomInfo.setAwayId(0);
+								myRoomInfo.setUserCount(1);
+								roomInfoConnection.updateConnection(myRoomInfo);	//awayId를 0으로 업데이트
+							}
+						}
+						mainFrame.setMyRoomInfo(null);
+						mainFrame.addWaitingPanel();
+						mainFrame.getCardLayout().show(mainFrame.getContentPane(), "WaitingPanel");	//대기실로 나가
+						mainFrame.removePanel(gamePanel);
+						
 		 				dispose();
 		 			}
 		 		});
 			mainPanel.add(exitBtn);
 		add(mainPanel);
 		
-		//win();		//승
-		lose();		//패
+		if(resultCase[resultIndex].equals("WIN")) {
+			win();
+		} 
+		else if(resultCase[resultIndex].equals("LOSE")) {
+			lose();
+		}
 	}
 
 	
 	//win
-	void win() {
+	private void win() {
+		System.out.println("승");
+		myInfo.setWin(myInfo.getWin()+1);
+		System.out.println(myInfo.toString());
+		myInfo = mainFrame.userParse(userConnection.updateConnection(myInfo));
+		mainFrame.setMyInfo(myInfo);
+		System.out.println(myInfo.toString());
 		
-		hostLabel = new JLabel("userName");
+		hostLabel = new JLabel(myInfo.getNickName() + " 승");
 			hostLabel.setBackground(Color.white);
 			//hostLabel.setOpaque(true);
 			hostLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -179,23 +262,34 @@ public class ResultFrame extends JFrame{
 			recordLabel.setFont(new Font("맑은 고딕",Font.BOLD, 26));
 			recordLabel.setForeground(color6);
 			recordLabel.setSize(100, 30);
-			recordLabel.setLocation(90, 190);
+			recordLabel.setLocation(30, 190);
 		alphaPanel.add(recordLabel);		
 		
-		recordText = new JLabel("00 / 00");
+		recordText = new JLabel(myInfo.getRecord());
 			recordText.setBackground(Color.white);
 			recordText.setHorizontalAlignment(JLabel.CENTER);
 			recordText.setFont(new Font("맑은 고딕",Font.BOLD, 26));
 			recordText.setForeground(color6);
-			recordText.setSize(100, 30);
-			recordText.setLocation(200, 190);
+			recordText.setSize(250, 30);
+			recordText.setLocation(130, 190);
 		alphaPanel.add(recordText);		
 	}
 
 	//lose
-	void lose() {
+	private void lose() {
+		System.out.println("패");
+		if(initCase[initIndex].equals("HOST")) {
+			enemyNumber = myGameInfo.getAwayNumber();
+		} 
+		else if(initCase[initIndex].equals("AWAY")){
+			enemyNumber = myGameInfo.getHostNumber();
+		}
+		myInfo.setLose(myInfo.getLose()+1);
+		myInfo = mainFrame.userParse(userConnection.updateConnection(myInfo));
+		mainFrame.setMyInfo(myInfo);
+		System.out.println(myInfo.toString());
 		
-		hostLabel = new JLabel("userName");
+		hostLabel = new JLabel(myInfo.getNickName() + " 패");
 			hostLabel.setBackground(Color.white);
 			//hostLabel.setOpaque(true);
 			hostLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -210,21 +304,21 @@ public class ResultFrame extends JFrame{
 			drawLabel2.setLocation(120,0);
 		alphaPanel.add(drawLabel2);
 		
-		awayNumLabel = new JLabel("상대방 숫 자 :");
-			awayNumLabel.setHorizontalAlignment(JLabel.CENTER);
-			awayNumLabel.setFont(new Font("맑은 고딕",Font.BOLD, 23));
-			awayNumLabel.setForeground(color6);
-			awayNumLabel.setSize(150, 30);
-			awayNumLabel.setLocation(70, 150);
-		alphaPanel.add(awayNumLabel);	
+		enemyNumLabel = new JLabel("상대방 숫 자 :");
+			enemyNumLabel.setHorizontalAlignment(JLabel.CENTER);
+			enemyNumLabel.setFont(new Font("맑은 고딕",Font.BOLD, 23));
+			enemyNumLabel.setForeground(color6);
+			enemyNumLabel.setSize(150, 30);
+			enemyNumLabel.setLocation(70, 150);
+		alphaPanel.add(enemyNumLabel);	
 		
-		awayNumText = new JLabel("0 0 0 0 0");
-			awayNumText.setHorizontalAlignment(JLabel.CENTER);
-			awayNumText.setFont(new Font("맑은 고딕",Font.BOLD, 23));
-			awayNumText.setForeground(color6);
-			awayNumText.setSize(150, 30);
-			awayNumText.setLocation(200, 150);
-		alphaPanel.add(awayNumText);	
+		enemyNumText = new JLabel(enemyNumber);
+			enemyNumText.setHorizontalAlignment(JLabel.CENTER);
+			enemyNumText.setFont(new Font("맑은 고딕",Font.BOLD, 23));
+			enemyNumText.setForeground(color6);
+			enemyNumText.setSize(150, 30);
+			enemyNumText.setLocation(200, 150);
+		alphaPanel.add(enemyNumText);	
 		
 		recordLabel = new JLabel("전 적 :");
 		recordLabel.setBackground(Color.white);
@@ -232,17 +326,23 @@ public class ResultFrame extends JFrame{
 		recordLabel.setFont(new Font("맑은 고딕",Font.BOLD, 26));
 		recordLabel.setForeground(color6);
 		recordLabel.setSize(100, 30);
-		recordLabel.setLocation(95, 190);
+		recordLabel.setLocation(30, 190);
 		alphaPanel.add(recordLabel);		
 	
-		recordText = new JLabel("00 / 00");
+		recordText = new JLabel(myInfo.getRecord());
 		recordText.setBackground(Color.white);
 		recordText.setHorizontalAlignment(JLabel.CENTER);
 		recordText.setFont(new Font("맑은 고딕",Font.BOLD, 26));
 		recordText.setForeground(color6);
-		recordText.setSize(100, 30);
-		recordText.setLocation(195, 190);
+		recordText.setSize(250, 30);
+		recordText.setLocation(130, 190);
 		alphaPanel.add(recordText);	
+		System.out.println("패 초기화 완료");
+	}
+
+	@Override
+	public void run() {
+		initialize();
 	}
 	
 }

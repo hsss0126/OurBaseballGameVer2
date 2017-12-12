@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 
 public class User {
 	
-	int id;
-	String nickName;
-	int stateId;
-	String stateName;
-	int win;
-	int lose;
+	private int id;
+	private String nickName;
+	private int stateId;
+	private String stateName;
+	private int win;
+	private int lose;
 
 	public int getId() {
 		return id;
@@ -59,7 +59,7 @@ public class User {
 		this.stateName = stateName;
 	}
 
-	public float getRate() {
+	private float getRate() {
 		if(this.win==0 && this.lose==0) return 0;
 		BigDecimal numerator, denominator, result, per;
 		per = new BigDecimal(100);

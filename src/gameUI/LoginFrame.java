@@ -21,7 +21,7 @@ import javax.swing.border.MatteBorder;
 import connection.UserConnection;
 import etc.ResponseCode;
 
-public class LoginFrame extends JFrame{
+public class LoginFrame extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 //------------------------------------------------------------
@@ -142,6 +142,8 @@ public class LoginFrame extends JFrame{
 			passwordField.setFont(font);
 			passwordField.setSize(190, 30);
 			passwordField.setLocation(155, 103);
+			passwordField.setActionCommand("login");
+			passwordField.addActionListener(this);
 		two.add(passwordField);
 		
 		//회원가입 버튼
@@ -151,14 +153,8 @@ public class LoginFrame extends JFrame{
 			joinBtn.setLocation(55, 200);
 			joinBtn.setBackground(color1);
 			joinBtn.setBorder(new MatteBorder(1,1,1,1, Color.black));
-			
-			joinBtn.addActionListener(new ActionListener() {
-				@Override
-	 			public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-	 				new JoinFrame();	//회원가입버튼 클릭시 회원가입 창 띄우기
-	 			}
-	 		});
+			joinBtn.setActionCommand("join");
+			joinBtn.addActionListener(this);
 		two.add(joinBtn);
 		
 		//로그인 버튼
@@ -168,37 +164,46 @@ public class LoginFrame extends JFrame{
 			loginBtn.setLocation(210, 200);
 			loginBtn.setBackground(color1);
 			loginBtn.setBorder(new MatteBorder(1,1,1,1, Color.black));
-			
-			loginBtn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					nickName = nickNameField.getText();
-					password = new String(passwordField.getPassword());
-					String result;
-					
-					result = userConnection.loginConnection(nickName, password.toLowerCase());
-					
-					switch(Integer.parseInt(result)) {
-					case ResponseCode.connect_error:
-						System.out.println("서버 연결 오류");
-						break;
-					case ResponseCode.user_login_success:
-						System.out.println("로그인 성공");
-						new MainFrame(nickName);
-						dispose();
-						break;
-					case ResponseCode.user_id_error:
-						System.out.println("해당 닉네임 중복");
-						break;
-					case ResponseCode.user_pwd_error:
-						System.out.println("패스워드 오류");
-						break;
-					}
-	            }
-			});
+			loginBtn.setActionCommand("login");
+			loginBtn.addActionListener(this);
 		two.add(loginBtn);
 
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		String command = e.getActionCommand();
+		switch(command) {
+		case "login":
+			
+			nickName = nickNameField.getText();
+			password = new String(passwordField.getPassword());
+			String result;
+			
+			result = userConnection.loginConnection(nickName, password.toLowerCase());
+			
+			switch(Integer.parseInt(result)) {
+			case ResponseCode.connect_error:
+				System.out.println("서버 연결 오류");
+				break;
+			case ResponseCode.user_login_success:
+				System.out.println("로그인 성공");
+				new MainFrame(nickName);
+				dispose();
+				break;
+			case ResponseCode.user_id_error:
+				System.out.println("해당 닉네임 중복");
+				break;
+			case ResponseCode.user_pwd_error:
+				System.out.println("패스워드 오류");
+				break;
+			}
+			break;
+		case "join":
+			new JoinFrame();
+			break;
+		}
 	}
 
 }

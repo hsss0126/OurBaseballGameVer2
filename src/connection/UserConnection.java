@@ -40,22 +40,18 @@ public class UserConnection {
 			JSONObject json = new JSONObject();
 			json.put("nickName", arg[0]);
 			json.put("password", arg[1]);
-			System.out.println("로그인할 유저 정보"+json.toString());
 			
 			OutputStream out = conn.getOutputStream();
 			out.write(json.toString().getBytes());
 			out.flush();
 			out.close();
-			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while((result = br.readLine())!=null) {
-					System.out.println(result);
 					return result;
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		result = Integer.toString(ResponseCode.connect_error);
@@ -88,22 +84,18 @@ public class UserConnection {
 			JSONObject json = new JSONObject();
 			json.put("nickName", arg[0]);
 			json.put("password", arg[1]);
-			System.out.println("회원가입할 유저 정보"+json.toString());
 			
 			OutputStream out = conn.getOutputStream();
 			out.write(json.toString().getBytes());
 			out.flush();
 			out.close();
-			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while((result = br.readLine())!=null) {
-					System.out.println(result);
 					return result;
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		result = Integer.toString(ResponseCode.connect_error);
@@ -115,12 +107,11 @@ public class UserConnection {
 	 * @param id
 	 * @return 조회된 회원정보
 	 */
-	public String findByIdConnection(String ...arg) {
+	public String findByIdConnection(int id) {
 		URL url;
 		HttpURLConnection conn = null;
 		String result;
 		try {
-			String id = URLEncoder.encode(arg[0], "UTF-8");
 			url = new URL(URLs.url+"user/findById?id="+id);
 			conn = (HttpURLConnection) url.openConnection();
 			
@@ -133,7 +124,6 @@ public class UserConnection {
 			conn.setDoInput(true);
 			conn.setDoOutput(false);
 			
-			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while((result = br.readLine())!=null) {
@@ -141,7 +131,6 @@ public class UserConnection {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		result = Integer.toString(ResponseCode.connect_error);
@@ -171,7 +160,6 @@ public class UserConnection {
 			conn.setDoInput(true);
 			conn.setDoOutput(false);
 			
-			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while((result = br.readLine())!=null) {
@@ -179,7 +167,6 @@ public class UserConnection {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		result = Integer.toString(ResponseCode.connect_error);
@@ -208,7 +195,6 @@ public class UserConnection {
 			conn.setDoInput(true);
 			conn.setDoOutput(false);
 			
-			System.out.println(conn.getResponseCode());
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while((result = br.readLine())!=null) {
@@ -216,7 +202,6 @@ public class UserConnection {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		result = Integer.toString(ResponseCode.connect_error);
@@ -251,22 +236,19 @@ public class UserConnection {
 			json.put("win", user.getWin());
 			json.put("lose", user.getLose());
 			json.put("stateId", user.getStateId());
-			System.out.println("업데이트할 유저 정보"+json.toString());
 			
 			OutputStream out = conn.getOutputStream();
 			out.write(json.toString().getBytes());
 			out.flush();
 			out.close();
-			System.out.println(conn.getResponseCode());
+			
 			if(conn.getResponseCode() == 200) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while((result = br.readLine())!=null) {
-					System.out.println(result);
 					return result;
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		result = Integer.toString(ResponseCode.connect_error);

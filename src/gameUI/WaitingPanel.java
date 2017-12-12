@@ -76,7 +76,7 @@ public class WaitingPanel extends JPanel {
 				private JButton talkBtn;		//대화전송
 			
 		private Font font = new Font("맑은 고딕",Font.BOLD,20);
-		private Font font2 = new Font("맑은 고딕",Font.BOLD,15);
+//		private Font font2 = new Font("맑은 고딕",Font.BOLD,15);
 		private Font font3 = new Font("맑은 고딕",Font.BOLD,12);
 		private Font font4 = new Font("맑은 고딕", Font.PLAIN, 15);
 
@@ -92,8 +92,7 @@ public class WaitingPanel extends JPanel {
 		private RoomInfoConnection roomInfoConnection;
 		private List<RoomInfo> createdRoomList = new ArrayList<RoomInfo>();
 		private String createdRoom;
-		private String orderIndex;
-		private String selectedRoom;
+		private int orderIndex;
 		private RoomInfo joinRoomInfo;
 		
 		private UserConnection userConnection;
@@ -112,14 +111,13 @@ public class WaitingPanel extends JPanel {
 		userConnection = new UserConnection();
 		roomInfoConnection = new RoomInfoConnection();
 		
-		orderIndex = "0";
+		orderIndex = 0;
 		
 		border = new BevelBorder(BevelBorder.RAISED);//3차원적인 테두리 효과를 위한것이고 양각의 옵션을 줌
 		
 		setLayout(new GridLayout(2,1));
 		setBackground(Color.WHITE);
 		setSize(800,600);
-		//setUndecorated(true); //프레임 타이틀바 없애기
 		setVisible(true);
 	
 		/* 내정보 & 방만들기 */
@@ -227,10 +225,10 @@ public class WaitingPanel extends JPanel {
 						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							if(orderIndex.equals("0")) {
-								orderIndex = "1";
+							if(orderIndex == 0) {
+								orderIndex = 1;
 							} else {
-								orderIndex = "0";
+								orderIndex = 0;
 							}
 							initRoomList(orderIndex);
 						}
@@ -249,10 +247,10 @@ public class WaitingPanel extends JPanel {
 						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							if(orderIndex.equals("2")) {
-								orderIndex = "3";
+							if(orderIndex == 2) {
+								orderIndex = 3;
 							} else {
-								orderIndex = "2";
+								orderIndex = 2;
 							}
 							initRoomList(orderIndex);
 						}
@@ -271,10 +269,10 @@ public class WaitingPanel extends JPanel {
 						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							if(orderIndex.equals("4")) {
-								orderIndex = "5";
+							if(orderIndex == 4) {
+								orderIndex = 5;
 							} else {
-								orderIndex = "4";
+								orderIndex = 4;
 							}
 							initRoomList(orderIndex);
 						}
@@ -293,10 +291,10 @@ public class WaitingPanel extends JPanel {
 						
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							if(orderIndex.equals("6")) {
-								orderIndex = "7";
+							if(orderIndex == 6) {
+								orderIndex = 7;
 							} else {
-								orderIndex = "6";
+								orderIndex = 6;
 							}
 							initRoomList(orderIndex);
 						}
@@ -332,24 +330,8 @@ public class WaitingPanel extends JPanel {
 						joinRoomInfo.setAwayId(myInfo.getId());
 						joinRoomInfo.setUserCount(2);
 
-						selectedRoom = roomInfoConnection.updateConnection(joinRoomInfo);
-						System.out.println("입장한 방 정보"+selectedRoom);
-						try {
-							parser = new JSONParser();	
-							JSONObject json = (JSONObject) parser.parse(selectedRoom);
-							joinRoomInfo.setId(Integer.parseInt((String)json.get("id")));
-							joinRoomInfo.setRoomName((String)json.get("roomName"));
-							joinRoomInfo.setHostId(Integer.parseInt((String)json.get("hostId")));
-							joinRoomInfo.setHostName((String)json.get("hostName"));
-							joinRoomInfo.setAwayId(Integer.parseInt((String)json.get("awayId")));
-							joinRoomInfo.setAwayName((String)json.get("awayName"));
-							joinRoomInfo.setLevel(Integer.parseInt((String)json.get("level")));
-							joinRoomInfo.setUserCount(Integer.parseInt((String)json.get("userCount")));
-							System.out.println("waiting "+joinRoomInfo.toString());
-							mainFrame.setMyRoomInfo(joinRoomInfo);
-						} catch(ParseException pe) {
-							pe.printStackTrace();
-						}
+						joinRoomInfo = mainFrame.roomInfoParse(roomInfoConnection.updateConnection(joinRoomInfo));
+						mainFrame.setMyRoomInfo(joinRoomInfo);
 						//방 입장 시 대기실 클라이언트 소켓 닫기
 						mainFrame.closeClient();
 						
@@ -502,9 +484,9 @@ public class WaitingPanel extends JPanel {
 			parser = new JSONParser();
 			JSONArray userList =(JSONArray) parser.parse(onlineUser);
 			onlineList = new ArrayList<User>();
+			
             for(int i=0; i<userList.size(); i++) {
             	JSONObject obj = (JSONObject) userList.get(i);
-            	System.out.println(obj.toString());
             	User user = new User();
             	user.setId(Integer.parseInt((String)obj.get("id")));
             	user.setNickName((String) obj.get("nickName"));
@@ -528,7 +510,7 @@ public class WaitingPanel extends JPanel {
 		}
 	}
 	
-	public void initRoomList(String orderIndex){
+	public void initRoomList(int orderIndex){
 		createdRoom = roomInfoConnection.listConnection(orderIndex);
 		try {
 			JSONArray roomList = (JSONArray) parser.parse(createdRoom);
@@ -553,7 +535,7 @@ public class WaitingPanel extends JPanel {
 			RoomListPanel panel = new RoomListPanel(roomInfo.getId(), roomInfo.getRoomName(), roomInfo.getLevel(), roomInfo.getUserCount());
 			roomListModel.addElement(panel);	
 		}
-		roomList.setModel(roomListModel);
+//		roomList.setModel(roomListModel);
 	}
 	public void chatSetting() {
 		talkArea.setText("대기실에 입장하였습니다.\n");
